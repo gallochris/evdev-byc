@@ -7,11 +7,7 @@ select
         when point_spread > 0 then '+' || cast(point_spread as varchar)
         else cast(point_spread as varchar)
     end as formatted_point_spread,
-    case 
-        when team_cover = true then 'Yes'
-        when team_cover = false then 'No'
-        else 'push'
-    end as formatted_team_cover,
+    upper(team_cover) as formatted_team_cover,
     total,
     combined_score,
     upper(over_or_under) as formatted_over_or_under,

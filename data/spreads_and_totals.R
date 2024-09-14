@@ -15,15 +15,27 @@ ats_recs <- cfbfastR::cfbd_betting_lines(year = 2024) |>
     combined_score = (home_score + away_score),
     over_or_under = dplyr::if_else(combined_score > total, "over", "under"),
     home_cover = dplyr::case_when(
-      point_spread < 0 ~ score_margin >= abs(point_spread),
-      # home team favored
-      point_spread > 0 ~ score_margin > point_spread,
-      # away team favored
-      point_spread == 0 ~ score_margin > 0,
-      # pick'em
-      TRUE ~ NA
+      # Home team is underdog
+      point_spread > 0 & score_margin > -point_spread ~ "Yes",
+      point_spread > 0 & score_margin < -point_spread ~ "No",
+      point_spread > 0 & score_margin == -point_spread ~ "Push",
+      
+      # Home team is favorite
+      point_spread < 0 & score_margin > abs(point_spread) ~ "Yes",
+      point_spread < 0 & score_margin < abs(point_spread) ~ "No",
+      point_spread < 0 & score_margin == abs(point_spread) ~ "Push",
+      
+      # Pick'em
+      point_spread == 0 & score_margin > 0 ~ "Yes",
+      point_spread == 0 & score_margin < 0 ~ "No",
+      point_spread == 0 & score_margin == 0 ~ "Push",
+      
+      TRUE ~ NA_character_  # Handle any unexpected cases
     ),
-    away_cover = dplyr::if_else(home_cover == TRUE, FALSE, TRUE),
+    away_cover = dplyr::case_match(home_cover,
+                  "Yes" ~ "No",
+                  "No" ~ "Yes", 
+                  "Push" ~ "Push"),
     result = dplyr::if_else(home_score > away_score, "W", "L"),
   ) |>
   dplyr::select(

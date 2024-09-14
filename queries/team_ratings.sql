@@ -8,4 +8,5 @@ select
       fpi,
       fpi_ptile
   from cfb.team_ratings
+  where conf like '${inputs.conf.value}'
   order by f_plus_rk, fpi_rk asc
