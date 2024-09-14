@@ -12,10 +12,16 @@ Shows public facing team ratings, rank, and percentile from:
 
 These ratings are more predictive than a true résumé rating. 
 
+```sql confs
+select conf from team_ratings
+```
+
+<Dropdown data={confs} name=conf value=conf defaultValue="%">
+  <DropdownOption value="%" valueLabel="All conferences"/>
+</Dropdown>
 
 <DataTable data={team_ratings} rows=all rowNumbers=true>
   <Column id=team_name title="Team"/>
-  <Column id=conf title="Conference"/>
   <Column id=f_plus_rk title="Rank" colGroup="F+"/>
   <Column id=f_plus fmt=num2 title="Rating" redNegatives=true colGroup="F+"/>
   <Column id=f_plus_ptile fmt=pct title="% tile" contentType=colorscale scaleColor={['#ce5050', 'white', '#6db678']} colGroup="F+"/>
