@@ -6,6 +6,8 @@ queries:
 
 ### Team ratings 
 
+`Last update: September 10, 2024`
+
 Shows public facing team ratings, rank, and percentile from: 
 - [F+](https://www.bcftoys.com/2024-fplus/): combination of Brian Fremeau's FEI ratings with Bill Connelly's SP+ ratings
 - [FPI](https://www.espn.com/college-football/fpi): Football Power Index from ESPN measures team's true strength on net points scale or expected point margin vs average opponent on neutral field.

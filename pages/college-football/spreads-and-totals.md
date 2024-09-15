@@ -10,7 +10,9 @@ select team from spreads_and_totals
 
 ### Point Spreads and Totals 
 
-Shows the point spreads and totals for any games between two FBS teams. Select a team to filter by only results only related to that team. Excludes results for games against FCS teams. 
+Shows the point spreads and totals for any games between two FBS teams. Select a team to filter by only results related to that specific team. Excludes results for games against FCS teams. 
+
+The table shows one row per team. 
 
 <Dropdown data={teams} name=team value=team title="Select a team">
 <DropdownOption value=% valueLabel="All Teams"/>
@@ -185,7 +187,7 @@ where team like '${inputs.team.value}'
 {/if}
 {/each}
 
-<DataTable data={spreads_and_totals} rows=all rowNumbers=true>
+<DataTable data={spreads_and_totals} search=true rows=all rowNumbers=true>
   <Column id=week title="Week"/>
   <Column id=team title="Team"/>
   <Column id=opp title="Opponent"/>
@@ -194,5 +196,5 @@ where team like '${inputs.team.value}'
   <Column id=formatted_point_spread fmt=# downIsGood=true title="Spread"/>
   <Column id=formatted_team_cover title="Cover"/>
   <Column id=total title="Total"/>
-  <Column id=formatted_over_or_under title="Over or Under"/>
+  <Column id=formatted_over_or_under wrapTitle=true title="Over or Under"/>
 </DataTable>

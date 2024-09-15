@@ -1,10 +1,10 @@
 ---
-title: "Bless your chart: data doodads"
+title: "Data"
 ---
 
 ## About
 
-Data on this site complements [Bless your chart](https://blessyourchart.substack.com/), a weekly data visualization publication about college sports from Chris Gallo. 
+Data on this app complements [Bless your chart](https://blessyourchart.substack.com/), a weekly data visualization publication about college sports from [Chris Gallo](https://hellogallo.com/). 
 
 Bless your chart is a bad pun. Bless your heart is a one of the more versatile phrases in Southern lexicon. It can mean so many different things. Good, bad, and ugly. It’s all in the tone and context of how you use it.
 
@@ -15,8 +15,8 @@ As you visualize data, the same thing can apply. One person might draw completel
 The current focus is the 2024 college football season. 
 
 Data includes: 
-- conference standings and point differentials 
 - team ratings from FPI and F+ 
+- conference standings and point differentials 
 - point spreads and totals 
 
 ### Data sources

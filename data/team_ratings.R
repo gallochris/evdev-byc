@@ -140,7 +140,8 @@ confs_only <- cfbfastR::cfbd_team_info(year = 2024) |>
 cfb_ratings <- f_plus |>
   dplyr::left_join(fpi, by = c("team_name")) |>
   dplyr::left_join(confs_only, by = "team_name") |>
-  dplyr::mutate(team_name = paste0(team_name, " (", record, ")")) |>
+  dplyr::mutate(team_name = paste0(team_name, " (", record, ")"),
+                week = 2) |>
   dplyr::select(team_name,
                 conf,
                 f_plus_rk,
@@ -148,7 +149,8 @@ cfb_ratings <- f_plus |>
                 f_plus_ptile,
                 fpi_rk,
                 fpi,
-                fpi_ptile) 
+                fpi_ptile,
+                week)
 
 # Save the table to duckdb
 library(duckdb)
