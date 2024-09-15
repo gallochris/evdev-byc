@@ -1,4 +1,12 @@
-# ATS
+# ATS data requires lots of fetching from other sources 
+# First grab the the location of games played
+games_location <- cfbfastR::cfbd_game_info(
+  year = 2024,
+  season_type = "regular") |> 
+  dplyr::filter(!is.na(home_points)) |> 
+  dplyr::select(game_id, neutral_site)
+
+# Next grab the point spreads and totals 
 # when point spread is less than 0 - it means the home team is favored
 # when score margin is greater than 0, it means the home team won
 # anything else is a push
@@ -57,12 +65,14 @@ ats_recs <- cfbfastR::cfbd_betting_lines(year = 2024) |>
     home_conference,
     away_conference,
     provider
-  )
+  ) 
 
 
 # Home point spreads
 home_ats <- ats_recs |>
-  dplyr::mutate(result = dplyr::if_else(home_score > away_score, "W", "L")) |>
+  dplyr::left_join(games_location, by = "game_id") |> 
+  dplyr::mutate(result = dplyr::if_else(home_score > away_score, "W", "L"),
+                location = dplyr::if_else(neutral_site == TRUE, "Neutral", "Home")) |>
   dplyr::rename(
     team = home_team,
     opp = away_team,
@@ -90,16 +100,18 @@ home_ats <- ats_recs |>
     total,
     over_or_under,
     combined_score,
-    formatted_spread
+    formatted_spread,
+    location
   )
 
 
 # Away point spreads
 away_ats <- ats_recs |>
+  dplyr::left_join(games_location, by = "game_id") |> 
   dplyr::mutate(
     result = dplyr::if_else(away_score > home_score, "W", "L"),
-    point_spread = dplyr::if_else(point_spread < 0, abs(point_spread), point_spread)
-  ) |>
+    point_spread = dplyr::if_else(point_spread > 0, -point_spread, point_spread),
+    location = dplyr::if_else(neutral_site == TRUE, "Neutral", "Away")) |> 
   dplyr::rename(
     team = away_team,
     opp = home_team,
@@ -127,7 +139,8 @@ away_ats <- ats_recs |>
     total,
     over_or_under,
     combined_score,
-    formatted_spread
+    formatted_spread,
+    location
   )
 
 # Filter by FBS vs FBS
@@ -141,6 +154,7 @@ full_ats <- home_ats |>
   dplyr::bind_rows(away_ats) |>
   dplyr::filter(game_id %in% fbs_only) |>
   dplyr::mutate(is_favorite = dplyr::if_else(point_spread < 0, TRUE, FALSE),
+                is_underdog = dplyr::if_else(is_favorite == TRUE, FALSE, TRUE), 
                 score_sentence = paste0(result, ", ", team_points, "-", opp_points)) |> 
   as.data.frame()
 

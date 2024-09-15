@@ -2,6 +2,7 @@ select
     week,
     team,
     opp,
+    location,
     score_sentence,
     case 
         when point_spread > 0 then '+' || cast(point_spread as varchar)
