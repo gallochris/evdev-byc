@@ -4,9 +4,11 @@ title: "Data"
 
 ## About
 
-Data on this app complements [Bless your chart](https://blessyourchart.substack.com/), a weekly data visualization publication about college sports from [Chris Gallo](https://hellogallo.com/). 
+Data on this app complements [Bless your chart](https://blessyourchart.substack.com/), a free weekly data visualization publication about college sports from [Chris Gallo](https://hellogallo.com/). 
 
-Bless your chart is a bad pun. Bless your heart is a one of the more versatile phrases in Southern lexicon. It can mean so many different things. Good, bad, and ugly. It’s all in the tone and context of how you use it.
+Bless your heart is a one of the more versatile phrases in Southern lexicon. It can mean so many different things. Good, bad, and ugly. It’s all in the tone and context of how you use it.
+
+Bless your chart is a bad pun.
 
 As you visualize data, the same thing can apply. One person might draw completely different conclusions than another person. So as you read this publication, you might say . . . _bless your ~~heart~~ chart_.
 

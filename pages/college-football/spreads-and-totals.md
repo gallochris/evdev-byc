@@ -12,7 +12,7 @@ select team from spreads_and_totals
 
 Shows the point spreads and totals for any games between two FBS teams. Select a team to filter by only results related to that specific team. Excludes results for games against FCS teams. 
 
-The table shows one row per team. 
+The table shows one row per team.
 
 <Dropdown data={teams} name=team value=team title="Select a team">
 <DropdownOption value=% valueLabel="All Teams"/>
@@ -80,27 +80,6 @@ where team like '${inputs.team.value}'
   value=total_games
   title="Games"
   fmt='#'
-/>
-
-<BigValue
-  data={row}
-  value=avg_total
-  title="Avg Total"
-  fmt='num1'
-/>
-
-<BigValue
-  data={row}
-  value=avg_spread
-  title="Avg Spread"
-  fmt='num1'
-/>
-
-<BigValue
-  data={row}
-  value=avg_margin
-  title="Avg Margin"
-  fmt='num1'
 />
 
 <BigValue

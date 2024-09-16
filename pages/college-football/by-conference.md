@@ -20,7 +20,9 @@ If there are neutral site conference games, the winner is listed as the home tea
 </Dropdown>
 
 
-<DataTable data={conference_standings} rows=all rowNumbers=true>
+{#if inputs.conf.value == 'Sun Belt'}
+
+<DataTable data={conference_standings} groupBy=division rows=all rowNumbers=true>
   <Column id=team title="Team"/>
   <Column id=conf_win title="W" colGroup="{inputs.conf.value}"/>
   <Column id=conf_loss title="L" colGroup="{inputs.conf.value}"/>
@@ -33,11 +35,32 @@ If there are neutral site conference games, the winner is listed as the home tea
   <Column id=away_diff contentType=delta fmt=# title="+/-" colGroup="Away"/>
 </DataTable>
 
+{:else }
+
+<DataTable data={conference_standings} rows=all rowNumbers=true>
+  <Column id=team title="Team"/>
+  <Column id=conf_win title="W" colGroup="{inputs.conf.value}"/>
+  <Column id=conf_loss title="L" colGroup="{inputs.conf.value}"/>
+  <Column id=full_diff contentType=delta fmt=# title="+/-" colGroup="{inputs.conf.value}"/>
+  <Column id=h_w title="W" colGroup="Home"/>
+  <Column id=h_l title="L" colGroup="Home"/>
+  <Column id=home_diff contentType=delta fmt=# title="+/-" colGroup="Home"/>
+  <Column id=a_w title="W" colGroup="Away"/>
+  <Column id=a_l title="L" colGroup="Away"/>
+  <Column id=away_diff contentType=delta fmt=# title="+/-" colGroup="Away"/>
+</DataTable>
+{/if}
+
+
+
+```sql conf_head_to_head
+select conf from non_con_results
+```
 
 
 ### FBS vs FBS Conference Records
 
-<Dropdown data={confs} name=conf value=conf title="Conference">
+<Dropdown data={conf_head_to_head} name=conf_head_to_head value=conf title="Conference">
 </Dropdown>
 
 ```sql conf_summaries
@@ -48,13 +71,13 @@ select
      cast(sum(losses) as int)
    ) as conf_overall_record
 from non_con_results
-where conf like '${inputs.conf.value}'
+where conf like '${inputs.conf_head_to_head.value}'
 ```
 
 <BigValue
   data={conf_summaries}
   value=conf_overall_record
-  title="{inputs.conf.value}'s record against other FBS conferences:"
+  title="{inputs.conf_head_to_head.value}'s record against other FBS conferences:"
   fmt='0'
 />
 

@@ -6,7 +6,7 @@ queries:
 
 ### Team ratings 
 
-`Last update: September 10, 2024`
+`Last update: September 16, 2024`
 
 Shows public facing team ratings, rank, and percentile from: 
 - [F+](https://www.bcftoys.com/2024-fplus/): combination of Brian Fremeau's FEI ratings with Bill Connelly's SP+ ratings
@@ -18,20 +18,48 @@ These ratings are more predictive than a true résumé rating.
 select conf from team_ratings
 ```
 
+```sql include_ptiles
+select 
+       f_plus_ptile,
+       fpi_ptile
+from team_ratings
+where not ${inputs.include_ptiles} 
+  or (
+    ${inputs.include_ptiles}
+  )
+```
+
 <Dropdown data={confs} name=conf value=conf defaultValue="%">
   <DropdownOption value="%" valueLabel="All conferences"/>
 </Dropdown>
+
+<Checkbox
+    title="Include percentiles" 
+    name=include_ptiles
+    defaultValue=true
+/>
+
+{#if inputs.include_ptiles == true}
 
 <DataTable data={team_ratings} rows=all rowNumbers=true>
   <Column id=team_name title="Team"/>
   <Column id=f_plus_rk title="Rank" colGroup="F+"/>
   <Column id=f_plus fmt=num2 title="Rating" redNegatives=true colGroup="F+"/>
-  <Column id=f_plus_ptile fmt=pct title="% tile" contentType=colorscale scaleColor={['#ce5050', 'white', '#6db678']} colGroup="F+"/>
+  <Column id="f_plus_ptile" fmt="pct" title="% tile" contentType="colorscale" 
+              scaleColor={['#ce5050', 'white', '#6db678']} colGroup="F+"/>
   <Column id=fpi_rk title="Rank" colGroup="FPI"/>
   <Column id=fpi fmt=num2 title="Rating" redNegatives=true colGroup="FPI"/>
   <Column id=fpi_ptile fmt=pct title="% tile" contentType=colorscale scaleColor={['#ce5050', 'white', '#6db678']} colGroup="FPI"/>
 </DataTable>
 
+{:else }
 
-
+<DataTable data={team_ratings} rows=all rowNumbers=true>
+  <Column id=team_name title="Team"/>
+  <Column id=f_plus_rk title="Rank" colGroup="F+"/>
+  <Column id=f_plus fmt=num2 title="Rating" redNegatives=true colGroup="F+"/>
+  <Column id=fpi_rk title="Rank" colGroup="FPI"/>
+  <Column id=fpi fmt=num2 title="Rating" redNegatives=true colGroup="FPI"/>
+</DataTable>
+{/if}
 
