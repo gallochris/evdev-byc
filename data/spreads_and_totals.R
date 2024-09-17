@@ -110,7 +110,7 @@ away_ats <- ats_recs |>
   dplyr::left_join(games_location, by = "game_id") |> 
   dplyr::mutate(
     result = dplyr::if_else(away_score > home_score, "W", "L"),
-    point_spread = dplyr::if_else(point_spread > 0, -point_spread, point_spread),
+    point_spread = dplyr::if_else(point_spread > 0, -point_spread, abs(point_spread)),
     location = dplyr::if_else(neutral_site == TRUE, "Neutral", "Away")) |> 
   dplyr::rename(
     team = away_team,
@@ -155,7 +155,11 @@ full_ats <- home_ats |>
   dplyr::filter(game_id %in% fbs_only) |>
   dplyr::mutate(is_favorite = dplyr::if_else(point_spread < 0, TRUE, FALSE),
                 is_underdog = dplyr::if_else(is_favorite == TRUE, FALSE, TRUE), 
-                score_sentence = paste0(result, ", ", team_points, "-", opp_points)) |> 
+                score_sentence = paste0(result, ", ", team_points, "-", opp_points),
+                is_home_favorite = dplyr::if_else(
+                  is_favorite == TRUE & location == "Home", 
+                  TRUE,
+                  FALSE)) |> 
   as.data.frame()
 
 
@@ -173,60 +177,3 @@ dbDisconnect(con, shutdown = TRUE)
 
 
 
-
-### Summary notes 
-full_ats |>
-  dplyr::filter(is_favorite == FALSE) |>
-  dplyr::summarise(
-    total_covers = sum(team_cover),
-    total_games = dplyr::n(),
-    cover_percentage = mean(team_cover) * 100
-  )
-
-
-full_ats |>
-  dplyr::filter(is_favorite == TRUE) |>
-  dplyr::summarise(
-    total_covers = sum(team_cover),
-    total_games = dplyr::n(),
-    cover_percentage = mean(team_cover) * 100
-  )
-
-### summary
-home_summary <- ats_recs |>
-  dplyr::group_by(home_team) |>
-  dplyr::summarise(
-    home_games = dplyr::n(),
-    home_covers = sum(home_cover == TRUE, na.rm = TRUE),
-    .groups = "drop"
-  )
-
-# Summarize away team performance
-away_summary <- ats_recs |>
-  dplyr::group_by(away_team) |>
-  dplyr::summarise(
-    away_games = dplyr::n(),
-    away_covers = sum(away_cover == TRUE, na.rm = TRUE),
-    .groups = "drop"
-  )
-
-# Combine home and away summaries
-team_summary <- home_summary |>
-  dplyr::full_join(away_summary, by = c("home_team" = "away_team")) |>
-  dplyr::mutate(
-    team = home_team,
-    total_games = home_games + away_games,
-    total_covers = home_covers + away_covers,
-    cover_percentage = total_covers / total_games
-  ) |>
-  dplyr::select(
-    team,
-    home_games,
-    away_games,
-    total_games,
-    home_covers,
-    away_covers,
-    total_covers,
-    cover_percentage
-  ) |>
-  dplyr::arrange(dplyr::desc(cover_percentage))

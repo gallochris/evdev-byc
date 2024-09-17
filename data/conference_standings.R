@@ -108,7 +108,5 @@ duckdb::dbWriteTable(con, table_name, conference_standings, overwrite = TRUE)
 
 dbDisconnect(con, shutdown = TRUE)
 
-# test
-# duckdb::dbListTables(con)
 
 

@@ -140,8 +140,7 @@ confs_only <- cfbfastR::cfbd_team_info(year = 2024) |>
 cfb_ratings <- f_plus |>
   dplyr::left_join(fpi, by = c("team_name")) |>
   dplyr::left_join(confs_only, by = "team_name") |>
-  dplyr::mutate(team_name = paste0(team_name, " (", record, ")"),
-                week = 2) |>
+  dplyr::mutate(team_name = paste0(team_name, " (", record, ")")) |>
   dplyr::select(team_name,
                 conf,
                 f_plus_rk,
@@ -149,8 +148,8 @@ cfb_ratings <- f_plus |>
                 f_plus_ptile,
                 fpi_rk,
                 fpi,
-                fpi_ptile,
-                week)
+                fpi_ptile
+                )
 
 # Save the table to duckdb
 library(duckdb)
@@ -161,5 +160,32 @@ con <- dbConnect(duckdb::duckdb(dbdir = "sources/cfb/cfbdata.duckdb"))
 table_name <- "team_ratings"
 
 duckdb::dbWriteTable(con, table_name, cfb_ratings, overwrite = TRUE)
+
+dbDisconnect(con, shutdown = TRUE)
+
+
+# Make a boxplot by conference 
+ratings_comp <- cfb_ratings|>
+  dplyr::filter(!conf %in% c("Independents", "Pac-2"))|>  # no conf champ game
+  dplyr::mutate(rk_sum = f_plus_rk + fpi_rk,
+                rk_avg = rk_sum /2) |> 
+  dplyr::group_by(conf)|>
+  dplyr::summarise(
+    min = min(rk_avg),
+    first_quartile = quantile(rk_avg, 0.25),
+    median = median(rk_avg),
+    third_quartile = quantile(rk_avg, 0.75),
+    max = max(rk_avg),
+    total_teams = dplyr::n()
+  )|>
+  dplyr::mutate(conf_name = paste0(conf, ": ", total_teams, " teams")) |> 
+  dplyr::arrange(median)
+
+# Save this table to duckdb
+con <- dbConnect(duckdb::duckdb(dbdir = "sources/cfb/cfbdata.duckdb"))
+
+table_name <- "conf_ratings_comp"
+
+duckdb::dbWriteTable(con, table_name, ratings_comp, overwrite = TRUE)
 
 dbDisconnect(con, shutdown = TRUE)

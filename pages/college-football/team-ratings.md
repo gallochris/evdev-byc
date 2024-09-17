@@ -2,6 +2,7 @@
 sidebar_position: 1
 queries:
   - team_ratings: team_ratings.sql
+  - ratings_comparison: ratings_comparison.sql
 ---
 
 ### Team ratings 
@@ -63,3 +64,17 @@ where not ${inputs.include_ptiles}
 </DataTable>
 {/if}
 
+
+### Rankings Comparison by Conference 
+
+Calculates the average F+ and FPI ranking for each team, and groups by conference to surface the median ranking for all teams in a conference. 
+
+Exclues FBS conferences without a conference championship game. 
+
+<FunnelChart 
+    data={ratings_comparison}
+    nameCol=conf_name
+    valueCol=median_rank
+    funnelAlign=left
+    legend=off
+/>

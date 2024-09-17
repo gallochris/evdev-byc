@@ -5,5 +5,5 @@ select
       losses,
       result
   from cfb.non_con_results
-  where conf like '${inputs.conf.value}'
+  where conf like '${inputs.conf_head_to_head.value}'
   group by all
