@@ -34,8 +34,9 @@ f_plus <- webpage |>
 fpi <- cfbfastR::espn_ratings_fpi(year = 2024) |>
   dplyr::select(team_name, fpi) |>
   dplyr::mutate(fpi = as.numeric(fpi)) |>
+  dplyr::arrange(dplyr::desc(fpi)) |>
   dplyr::mutate(
-    fpi_rk = dplyr::dense_rank(dplyr::desc(fpi)),
+    fpi_rk = dplyr::row_number(),
     fpi_ptile = dplyr::percent_rank(fpi)
   ) |> 
   dplyr::mutate(
@@ -164,7 +165,7 @@ duckdb::dbWriteTable(con, table_name, cfb_ratings, overwrite = TRUE)
 dbDisconnect(con, shutdown = TRUE)
 
 
-# Make a boxplot by conference 
+# Ratings comp
 ratings_comp <- cfb_ratings|>
   dplyr::filter(!conf %in% c("Independents", "Pac-2"))|>  # no conf champ game
   dplyr::mutate(rk_sum = f_plus_rk + fpi_rk,
