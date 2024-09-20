@@ -1,1 +1,1 @@
-select * from "conference_standings"
+select * from conference_standings

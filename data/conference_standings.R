@@ -2,7 +2,7 @@
 conf_games <- cfbfastR::cfbd_game_info(year = 2024) |>
   dplyr::filter(home_conference == away_conference) |>
   dplyr::filter(game_id != "401636864") |>  # Arizona at Kansas St is not a conference game
-  #dplyr::filter(!is.na(home_points)) |>
+  # dplyr::filter(!is.na(home_points)) |>
   dplyr::mutate(conf = home_conference) |>
   dplyr::select(season,
                 week,
@@ -62,6 +62,12 @@ full_diffs <- merge(home_diffs, away_diffs, by = c("team", "conf")) |>
 overall_records <- cfbfastR::cfbd_game_records(year = 2024) |>
   dplyr::select(team, division, conf = conference, total_wins, total_losses)
 
+# define fbs leagues 
+fbs_leagues <- c("SEC", "ACC", "Big 12", 
+                 "Big Ten", "American Athletic",
+                 "Conference USA", "Mid-American",
+                 "Sun Belt", "Mountain West")
+
 # Conference standings
 conference_standings <- merge(full_diffs, full_recs, by = c("team", "conf")) |>
   dplyr::full_join(overall_records, by = c("team", "conf")) |> 
@@ -87,7 +93,7 @@ conference_standings <- merge(full_diffs, full_recs, by = c("team", "conf")) |>
                                a_w, 
                                a_l,
                                away_diff), ( ~ replace(., is.na(.), 0))) |> 
-  dplyr::filter(!conf %in% c("FBS Independents", "Pac-12")) |>  # no conf champ game 
+  dplyr::filter(conf %in% fbs_leagues) |>  # only leagues with conf champ game 
     dplyr::mutate(conf = dplyr::case_match(conf,
                                            "American Athletic" ~ "American",
                                            "Conference USA" ~ "CUSA",
