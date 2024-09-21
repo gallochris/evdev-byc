@@ -1,3 +1,8 @@
+# Load the utilities 
+# loads fbs power conferences with championship game
+# adjusts conference names 
+source(here::here("data/utils.R"))
+
 # ATS data requires lots of fetching from other sources 
 # First grab the the location of games played
 games_location <- cfbfastR::cfbd_game_info(
@@ -142,13 +147,6 @@ away_ats <- ats_recs |>
     formatted_spread,
     location
   )
-
-# Filter by FBS vs FBS
-fbs_only <-  cfbfastR::cfbd_game_info(year = 2024) |>
-  dplyr::filter(!is.na(home_points)) |>
-  dplyr::filter(home_division == "fbs" &
-                  away_division == "fbs") |>
-  dplyr::pull(game_id)
 
 full_ats <- home_ats |>
   dplyr::bind_rows(away_ats) |>

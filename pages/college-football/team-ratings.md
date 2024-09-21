@@ -13,7 +13,7 @@ Shows public facing team ratings, rank, and percentile from:
 - [F+](https://www.bcftoys.com/2024-fplus/): combination of Brian Fremeau's FEI ratings with Bill Connelly's SP+ ratings
 - [FPI](https://www.espn.com/college-football/fpi): Football Power Index from ESPN measures team's true strength on net points scale or expected point margin vs average opponent on neutral field.
 
-These ratings are more predictive than a true résumé rating. 
+Ratings updated typically every Monday or Tuesday.
 
 ```sql confs
 select conf from team_ratings
@@ -42,7 +42,7 @@ where not ${inputs.include_ptiles}
 
 {#if inputs.include_ptiles == true}
 
-<DataTable data={team_ratings} rows=all rowNumbers=true>
+<DataTable data={team_ratings} rows=all search=true rowNumbers=true>
   <Column id=team_name title="Team"/>
   <Column id=f_plus_rk title="Rank" colGroup="F+"/>
   <Column id=f_plus fmt=num2 title="Rating" redNegatives=true colGroup="F+"/>
@@ -64,17 +64,3 @@ where not ${inputs.include_ptiles}
 </DataTable>
 {/if}
 
-
-### Rankings Comparison by Conference 
-
-Calculates the average F+ and FPI ranking for each team, and groups by conference to surface the median ranking for all teams in a conference. 
-
-Exclues FBS conferences without a conference championship game. 
-
-<FunnelChart 
-    data={ratings_comparison}
-    nameCol=conf_name
-    valueCol=median_rank
-    funnelAlign=left
-    legend=off
-/>

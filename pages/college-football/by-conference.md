@@ -12,14 +12,45 @@ select conf from conference_standings
 ### Conference standings and point differentials 
 
 Shows the conference only records for teams in a FBS conference with a conference championship game. Excludes
-FBS independents and the Pac-12. Point differentials by location: home or away.
+FBS independents and the Pac-12 because there is no conference championship game. 
 
-If there are neutral site conference games, the winner is listed as the home team and the loser is listed as the away team for the record and point differentials.
+Point differentials by location: home or away. If there are neutral site conference games, the winner is listed as the home team and the loser is listed as the away team for the record and point differentials.
 
 <Dropdown data={confs} name=conf value=conf title="Conference">
 </Dropdown>
 
 
+```sql conf_records
+select
+  conf,
+  sum(h_w) as total_home_wins,
+  sum(conf_win + conf_loss) as total_games,
+  cast(sum(h_w) as float) / nullif(sum(h_w + h_l), 0) as home_win_pct,
+  sum(case when full_diff > 0 then full_diff end) / sum(conf_win) as avg_diff
+from cfb.conference_standings
+where conf like '${inputs.conf.value}'
+group by conf
+```
+
+{#each conf_records as row}
+
+#### {inputs.conf.value}
+
+<BigValue
+  data={row}
+  value=home_win_pct
+  title="Home win %"
+  fmt='pct1'
+/>
+
+<BigValue
+  data={row}
+  value=avg_diff
+  title="Average differential"
+  fmt='num1'
+/>
+
+{/each}
 {#if inputs.conf.value == 'Sun Belt'}
 
 <DataTable data={conference_standings} groupBy=division rows=all rowNumbers=true>

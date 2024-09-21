@@ -1,3 +1,7 @@
+# Load the utilities 
+# adjusts conference names 
+source(here::here("data/utils.R"))
+
 # Fetch F+ ratings from bcftoys.com
 url <- "https://www.bcftoys.com/2024-fplus/"
 
@@ -129,13 +133,7 @@ confs_only <- cfbfastR::cfbd_team_info(year = 2024) |>
       team_name ~ team_name
     )
   ) |> 
-  dplyr::mutate(conf = dplyr::case_match(conf,
-                                       "American Athletic" ~ "American",
-                                       "Pac-12" ~ "Pac-2",
-                                       "Conference USA" ~ "CUSA",
-                                       "FBS Independents" ~ "Independents",
-                                       "Mid-American" ~ "MAC",
-                                       conf ~ conf  )) 
+  dplyr::mutate(conf = conf_name_lookup(conf)) 
 
 # Combine the tables and add in the conferences
 cfb_ratings <- f_plus |>
@@ -161,32 +159,5 @@ con <- dbConnect(duckdb::duckdb(dbdir = "sources/cfb/cfbdata.duckdb"))
 table_name <- "team_ratings"
 
 duckdb::dbWriteTable(con, table_name, cfb_ratings, overwrite = TRUE)
-
-dbDisconnect(con, shutdown = TRUE)
-
-
-# Ratings comp
-ratings_comp <- cfb_ratings|>
-  dplyr::filter(!conf %in% c("Independents", "Pac-2"))|>  # no conf champ game
-  dplyr::mutate(rk_sum = f_plus_rk + fpi_rk,
-                rk_avg = rk_sum /2) |> 
-  dplyr::group_by(conf)|>
-  dplyr::summarise(
-    min = min(rk_avg),
-    first_quartile = quantile(rk_avg, 0.25),
-    median = median(rk_avg),
-    third_quartile = quantile(rk_avg, 0.75),
-    max = max(rk_avg),
-    total_teams = dplyr::n()
-  )|>
-  dplyr::mutate(conf_name = paste0(conf, ": ", total_teams, " teams")) |> 
-  dplyr::arrange(median)
-
-# Save this table to duckdb
-con <- dbConnect(duckdb::duckdb(dbdir = "sources/cfb/cfbdata.duckdb"))
-
-table_name <- "conf_ratings_comp"
-
-duckdb::dbWriteTable(con, table_name, ratings_comp, overwrite = TRUE)
 
 dbDisconnect(con, shutdown = TRUE)

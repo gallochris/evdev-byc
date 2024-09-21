@@ -1,3 +1,7 @@
+# Load the utilities 
+# adjusts conference names 
+source(here::here("data/utils.R"))
+
 # Conference H2H records for FBS only 
 
 # Home results
@@ -39,20 +43,8 @@ non_con_game_summary <- home_non_con_games |>
     losses = sum(result == "L")
   ) |>
   dplyr::mutate(result = paste0(wins, "-", losses)) |> 
-  dplyr::mutate(conf = dplyr::case_match(conf,
-                                         "American Athletic" ~ "American",
-                                         "Pac-12" ~ "Pac-2",
-                                         "Conference USA" ~ "CUSA",
-                                         "FBS Independents" ~ "Independents",
-                                         "Mid-American" ~ "MAC",
-                                         conf ~ conf  )) |> 
-  dplyr::mutate(opp_conf = dplyr::case_match(opp_conf,
-                                             "American Athletic" ~ "American",
-                                             "Pac-12" ~ "Pac-2",
-                                             "Conference USA" ~ "CUSA",
-                                             "FBS Independents" ~ "Independents",
-                                             "Mid-American" ~ "MAC",
-                                             opp_conf ~ opp_conf  ))
+  dplyr::mutate(conf = conf_name_lookup(conf)) |> 
+  dplyr::mutate(opp_conf = conf_name_lookup(opp_conf))
 
 # Save the table to duckdb
 library(duckdb)

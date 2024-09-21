@@ -77,13 +77,6 @@ where team like '${inputs.team.value}'
 
 <BigValue
   data={row}
-  value=total_games
-  title="Games"
-  fmt='#'
-/>
-
-<BigValue
-  data={row}
   value=favorite_cover_pct
   title="Favorites ATS"
   fmt='pct1'
