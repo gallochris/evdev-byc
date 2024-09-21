@@ -109,5 +109,23 @@ duckdb::dbWriteTable(con, table_name, conference_standings, overwrite = TRUE)
 
 dbDisconnect(con, shutdown = TRUE)
 
+# Create summary table 
+conf_sum_data <- conf_games |> 
+  dplyr::filter(!is.na(home_points)) |> 
+  dplyr::group_by(
+    conf
+  ) |> 
+  dplyr::summarise(
+    avg_diff = sum(abs(home_points - away_points)) / dplyr::n(),
+    home_win_pct = sum(home_points > away_points) / dplyr::n()
+  ) 
 
+# Save table  
+con <- dbConnect(duckdb::duckdb(dbdir = "sources/cfb/cfbdata.duckdb"))
+
+table_name <- "conf_sum_tbl"
+
+duckdb::dbWriteTable(con, table_name, conf_sum_data, overwrite = TRUE)
+
+dbDisconnect(con, shutdown = TRUE)
 

@@ -23,13 +23,10 @@ Point differentials by location: home or away. If there are neutral site confere
 ```sql conf_records
 select
   conf,
-  sum(h_w) as total_home_wins,
-  sum(conf_win + conf_loss) as total_games,
-  cast(sum(h_w) as float) / nullif(sum(h_w + h_l), 0) as home_win_pct,
-  sum(case when full_diff > 0 then full_diff end) / sum(conf_win) as avg_diff
-from cfb.conference_standings
+  home_win_pct,
+  avg_diff
+from cfb.conf_sum_data
 where conf like '${inputs.conf.value}'
-group by conf
 ```
 
 {#each conf_records as row}
