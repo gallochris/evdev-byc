@@ -110,15 +110,22 @@ duckdb::dbWriteTable(con, table_name, conference_standings, overwrite = TRUE)
 dbDisconnect(con, shutdown = TRUE)
 
 # Create summary table 
-conf_sum_data <- conf_games |> 
-  dplyr::filter(!is.na(home_points)) |> 
-  dplyr::group_by(
-    conf
-  ) |> 
-  dplyr::summarise(
+conf_sum_data <- conf_games |>
+  dplyr::filter(!is.na(home_points)) |>
+  dplyr::group_by(conf) |>
+  dplyr::reframe(
     avg_diff = sum(abs(home_points - away_points)) / dplyr::n(),
-    home_win_pct = sum(home_points > away_points) / dplyr::n()
-  ) 
+    home_win_pct = sum(
+      dplyr::case_when(
+        conf == "ACC" ~ home_points > away_points - 1,
+        # neutral site game
+        TRUE ~ home_points > away_points
+      )
+    ) / dplyr::if_else(conf == "ACC", dplyr::n() - 1, dplyr::n()),
+    close_pct = sum(abs(home_points - away_points) <= 7.5) / dplyr::n(),
+    blowout_pct = sum(abs(home_points - away_points) >= 17.5) / dplyr::n()
+  ) |>
+  dplyr::distinct(conf, .keep_all = TRUE)
 
 # Save table  
 con <- dbConnect(duckdb::duckdb(dbdir = "sources/cfb/cfbdata.duckdb"))

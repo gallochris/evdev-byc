@@ -11,10 +11,21 @@ select conf from conference_standings
 
 ### Conference standings and point differentials 
 
-Shows the conference only records for teams in a FBS conference with a conference championship game. Excludes
-FBS independents and the Pac-12 because there is no conference championship game. 
+- Conference only records for teams in a FBS conference with a conference championship game (excludes FBS independents and the Pac-12)
+- Point differentials by location: home or away
+- Close percentage: games decided by under 7.5 points
+- Blowout percentage: games decided by 17.5 or more points
 
-Point differentials by location: home or away. If there are neutral site conference games, the winner is listed as the home team and the loser is listed as the away team for the record and point differentials.
+
+<Details title="A note on neutral site conference games">
+
+If there are neutral site conference games, the winner is listed as the home team and the loser is listed as the away team for the record and point differentials.
+
+For example, Georgia Tech's win over Florida State in Ireland is counted as a home win and +3 in home point differential. 
+
+In terms of the home win percentage for the entire conference, this neutral site game is filtered out of the percentages. 
+</Details>
+
 
 <Dropdown data={confs} name=conf value=conf title="Conference">
 </Dropdown>
@@ -24,7 +35,9 @@ Point differentials by location: home or away. If there are neutral site confere
 select
   conf,
   home_win_pct,
-  avg_diff
+  avg_diff,
+  close_pct,
+  blowout_pct
 from cfb.conf_sum_data
 where conf like '${inputs.conf.value}'
 ```
@@ -47,7 +60,22 @@ where conf like '${inputs.conf.value}'
   fmt='num1'
 />
 
+<BigValue
+  data={row}
+  value=close_pct
+  title="Close game %"
+  fmt='pct1'
+/>
+
+<BigValue
+  data={row}
+  value=blowout_pct
+  title="Blowout game %"
+  fmt='pct1'
+/>
+
 {/each}
+
 {#if inputs.conf.value == 'Sun Belt'}
 
 <DataTable data={conference_standings} groupBy=division rows=all rowNumbers=true>
