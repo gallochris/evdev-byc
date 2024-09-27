@@ -157,7 +157,12 @@ full_ats <- home_ats |>
                 is_home_favorite = dplyr::if_else(
                   is_favorite == TRUE & location == "Home", 
                   TRUE,
-                  FALSE)) |> 
+                  FALSE),
+                spread_category = dplyr::case_when(
+                  abs(point_spread) < 3.5 ~ '3.5 or less',
+                  abs(point_spread) > 9.5 ~ 'Double-digits',
+                  .default = "All spreads"
+                )) |> 
   as.data.frame()
 
 
@@ -172,6 +177,7 @@ table_name <- "spreads_and_totals"
 duckdb::dbWriteTable(con, table_name, full_ats, overwrite = TRUE)
 
 dbDisconnect(con, shutdown = TRUE)
+
 
 
 

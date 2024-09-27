@@ -161,3 +161,4 @@ table_name <- "team_ratings"
 duckdb::dbWriteTable(con, table_name, cfb_ratings, overwrite = TRUE)
 
 dbDisconnect(con, shutdown = TRUE)
+

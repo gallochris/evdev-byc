@@ -8,68 +8,169 @@ queries:
 select team from spreads_and_totals
 ```
 
+```sql spread_query
+select 
+  spread_category
+from spreads_and_totals
+```
+
 ### Point Spreads and Totals 
 
-Shows the point spreads and totals for any games between two FBS teams. Select a team to filter by only results related to that specific team. Excludes results for games against FCS teams. 
+- Shows the point spreads and totals for any games between two FBS teams
+- Filter by point spreads under 3.5, double-digits, or all spreads
+- Select a team to see only results related to that specific team
 
-The table shows one row per team.
+<Details title="Notes">
 
-<Dropdown data={teams} name=team value=team title="Select a team">
-<DropdownOption value=% valueLabel="All Teams"/>
-</Dropdown>
+This data excludes results for games against FCS teams. 
+
+The table shows one row per team, so total games count should be half of the number of rows present in the table.
+</Details>
+
+<ButtonGroup
+    data={spread_query} 
+    name=spread_group
+    title="Filter by point spread"
+    defaultValue="All spreads">
+    <ButtonGroupItem valueLabel = "All spreads" value="All spreads" default/>
+    <ButtonGroupItem valueLabel = "Double-digits" value="Double-digits" />
+    <ButtonGroupItem valueLabel = "3.5 or less" value="3.5 or less" />
+</ButtonGroup>
+
 
 ```sql all_teams
 select 
-   sum(case when is_favorite = true then 1 else 0 end) as favored_count,
-   sum(case when over_or_under = 'over' then 1 else 0 end) / 2 as over_count,
-   sum(case when over_or_under = 'under' then 1 else 0 end) / 2 as under_count,
-   sum(case when over_or_under = 'over' then 1 else 0 end) / (over_count + under_count) / 2 as over_pct,
-   sum(case when over_or_under = 'under' then 1 else 0 end) / (over_count + under_count) / 2 as under_pct,
-   sum(case when team_cover = 'Yes' then 1 else 0 end) as covers_count,
-   sum(case when team_cover = 'No' then 1 else 0 end) as non_covers_count,
-   sum(case when team_cover = 'Push' then 1 else 0 end) as push_count,
-   concat(
-     cast(sum(case when team_cover = 'Yes' then 1 else 0 end) as varchar),
-     '-',
-     cast(sum(case when team_cover = 'No' then 1 else 0 end) as varchar),
-     '-',
-     cast(sum(case when team_cover = 'Push' then 1 else 0 end) as varchar)
-   ) as ats_record,
-   concat(
-     cast(sum(case when is_favorite = true and team_cover = 'Yes' then 1 else 0 end) as varchar),
-     '-',
-     cast(sum(case when is_favorite = true and team_cover = 'No' then 1 else 0 end) as varchar),
-     '-',
-     cast(sum(case when is_favorite = true and team_cover = 'Push' then 1 else 0 end) as varchar)
-   )  as favorite_record,
-   concat(
-     cast(sum(case when is_favorite = false and team_cover = 'Yes' then 1 else 0 end) as varchar),
-     '-',
-     cast(sum(case when is_favorite = false and team_cover = 'No' then 1 else 0 end) as varchar),
-     '-',
-     cast(sum(case when is_favorite = false and team_cover = 'Push' then 1 else 0 end) as varchar)
-   ) as underdog_record,
-   cast(
-  (sum(case when is_favorite = true and team_cover = 'Yes' then 1 
-            when is_favorite = true and team_cover = 'Push' then 0.5 
-            else 0 end) * 1.0) / 
-  nullif(sum(case when is_favorite = true then 1 else 0 end), 0)
-  as decimal(5,4)
-) as favorite_cover_pct,
-
-cast(
-  (sum(case when is_favorite = false and team_cover = 'Yes' then 1 
-            when is_favorite = false and team_cover = 'Push' then 0.5 
-            else 0 end) * 1.0) / 
-  nullif(sum(case when is_favorite = false then 1 else 0 end), 0)
-  as decimal(5,4)
-) as underdog_cover_pct,
-count(game_id) / 2 as total_games,
-mean(combined_score) as avg_total,
-mean(abs(point_spread)) as avg_spread,
-mean(abs(score_margin)) as avg_margin
-from spreads_and_totals
-where team like '${inputs.team.value}'
+  count(game_id) / 2 as total_games, 
+  sum(
+    case when is_favorite = true then 1 else 0 end
+  ) as favored_count, 
+  sum(
+    case when over_or_under = 'over' then 1 else 0 end
+  ) / 2 as over_count, 
+  sum(
+    case when over_or_under = 'under' then 1 else 0 end
+  ) / 2 as under_count, 
+  sum(
+    case when over_or_under = 'over' then 1 else 0 end
+  ) / (over_count + under_count) / 2 as over_pct, 
+  sum(
+    case when over_or_under = 'under' then 1 else 0 end
+  ) / (over_count + under_count) / 2 as under_pct, 
+  sum(
+    case when team_cover = 'Yes' then 1 else 0 end
+  ) as covers_count, 
+  sum(
+    case when team_cover = 'No' then 1 else 0 end
+  ) as non_covers_count, 
+  sum(
+    case when team_cover = 'Push' then 1 else 0 end
+  ) as push_count, 
+  concat(
+    cast(
+      sum(
+        case when team_cover = 'Yes' then 1 else 0 end
+      ) as varchar
+    ), 
+    '-', 
+    cast(
+      sum(
+        case when team_cover = 'No' then 1 else 0 end
+      ) as varchar
+    ), 
+    '-', 
+    cast(
+      sum(
+        case when team_cover = 'Push' then 1 else 0 end
+      ) as varchar
+    )
+  ) as ats_record, 
+  concat(
+    cast(
+      sum(
+        case when is_favorite = true 
+        and team_cover = 'Yes' then 1 else 0 end
+      ) as varchar
+    ), 
+    '-', 
+    cast(
+      sum(
+        case when is_favorite = true 
+        and team_cover = 'No' then 1 else 0 end
+      ) as varchar
+    ), 
+    '-', 
+    cast(
+      sum(
+        case when is_favorite = true 
+        and team_cover = 'Push' then 1 else 0 end
+      ) as varchar
+    )
+  ) as favorite_record, 
+  concat(
+    cast(
+      sum(
+        case when is_favorite = false 
+        and team_cover = 'Yes' then 1 else 0 end
+      ) as varchar
+    ), 
+    '-', 
+    cast(
+      sum(
+        case when is_favorite = false 
+        and team_cover = 'No' then 1 else 0 end
+      ) as varchar
+    ), 
+    '-', 
+    cast(
+      sum(
+        case when is_favorite = false 
+        and team_cover = 'Push' then 1 else 0 end
+      ) as varchar
+    )
+  ) as underdog_record, 
+  cast(
+    (
+      sum(
+        case when is_favorite = true 
+        and team_cover = 'Yes' then 1 when is_favorite = true 
+        and team_cover = 'Push' then 0.5 else 0 end
+      ) * 1.0
+    ) / nullif(
+      sum(
+        case when is_favorite = true then 1 else 0 end
+      ), 
+      0
+    ) as decimal(5, 4)
+  ) as favorite_cover_pct, 
+  cast(
+    (
+      sum(
+        case when is_favorite = false 
+        and team_cover = 'Yes' then 1 when is_favorite = false 
+        and team_cover = 'Push' then 0.5 else 0 end
+      ) * 1.0
+    ) / nullif(
+      sum(
+        case when is_favorite = false then 1 else 0 end
+      ), 
+      0
+    ) as decimal(5, 4)
+  ) as underdog_cover_pct, 
+  mean(combined_score) as avg_total, 
+  mean(
+    abs(point_spread)
+  ) as avg_spread, 
+  mean(
+    abs(score_margin)
+  ) as avg_margin, 
+from 
+  spreads_and_totals 
+where
+  team like '${inputs.team.value}'
+  and (
+    spread_category like '${inputs.spread_group}'
+    or '${inputs.spread_group}' = 'All spreads'
+  )
 ```
 
 {#each all_teams as row}
@@ -102,6 +203,34 @@ where team like '${inputs.team.value}'
   title="Unders"
   fmt='pct1'
 />
+
+<BigValue
+  data={row}
+  value=total_games
+  title="Total games"
+  fmt='#'
+/>
+
+<BigValue
+  data={row}
+  value=avg_spread
+  title="Avg spread"
+  fmt='num1'
+/>
+
+<BigValue
+  data={row}
+  value=avg_margin
+  title="Avg margin"
+  fmt='num1'
+/>
+
+<BigValue
+  data={row}
+  value=avg_total
+  title="Avg total"
+  fmt='num1'
+/>
 {/if}
 {/each}
 
@@ -109,8 +238,8 @@ where team like '${inputs.team.value}'
 ```sql team_summaries
 select 
    sum(case when is_favorite = true then 1 else 0 end) as favored_count,
-   sum(case when team = '${inputs.team.value}' and over_or_under = 'over' then 1 else 0 end) as team_over_count,
-   sum(case when team = '${inputs.team.value}' and over_or_under = 'under' then 1 else 0 end) as team_under_count,  -- Fixed alias for under count
+   sum(case when over_or_under = 'over' then 1 else 0 end) as team_over_count,
+   sum(case when over_or_under = 'under' then 1 else 0 end) as team_under_count,
    concat(
      cast(sum(case when team_cover = 'Yes' then 1 else 0 end) as varchar),
      '-',
@@ -118,11 +247,13 @@ select
      '-',
      cast(sum(case when team_cover = 'Push' then 1 else 0 end) as varchar)
    ) as ats_record,
-   sum(case when team = '${inputs.team.value}' then 1 else 0 end) as total_games,
-   avg(combined_score) as avg_total,  -- Use avg instead of mean
-   avg(abs(point_spread)) as avg_spread -- Use avg instead of mean
+   count(*) as total_games,
+   mean(combined_score) as avg_total,
+   mean(abs(point_spread)) as avg_spread,
+   'All spreads' as spread_category
 from spreads_and_totals
-where team like '${inputs.team.value}'
+where team = '${inputs.team.value}'
+group by team
 ```
 
 {#each team_summaries as row}
@@ -158,6 +289,11 @@ where team like '${inputs.team.value}'
 
 {/if}
 {/each}
+
+<Dropdown data={teams} name=team value=team title="Select a team">
+<DropdownOption value=% valueLabel="All Teams"/>
+</Dropdown>
+
 
 <DataTable data={spreads_and_totals} search=true rows=all rowNumbers=true>
   <Column id=week title="Week"/>

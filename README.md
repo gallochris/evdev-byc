@@ -4,15 +4,11 @@
 ## Get Started using the CLI
 
 ```bash
-npx degit evidence-dev/template my-project
-cd my-project 
+cd evdev-byc
 npm install 
 npm run sources
 npm run dev 
 ```
-
-Check out the docs for [alternative install methods](https://docs.evidence.dev/getting-started/install-evidence) including Docker, Github Codespaces, and alongside dbt.
-
 
 ## Evidence resources
 
