@@ -9,7 +9,8 @@ conf_games <- cfbfastR::cfbd_game_info(year = 2024) |>
   dplyr::filter(game_id != "401636864") |>  # Arizona at Kansas St is not a conference game
   # dplyr::filter(!is.na(home_points)) |>
   dplyr::mutate(conf = home_conference) |>
-  dplyr::select(season,
+  dplyr::select(game_id, 
+                season,
                 week,
                 conf,
                 home_team,
@@ -93,7 +94,7 @@ conference_standings <- merge(full_diffs, full_recs, by = c("team", "conf")) |>
                                a_l,
                                away_diff), ( ~ replace(., is.na(.), 0))) |> 
   dplyr::filter(conf %in% fbs_leagues) |>  # only leagues with conf champ game 
-    dplyr::mutate(conf =conf_name_lookup(conf)) # adjust conference names
+  dplyr::mutate(conf =conf_name_lookup(conf)) # adjust conference names
 
 # Save the table to duckdb
 library(duckdb)
@@ -109,23 +110,36 @@ duckdb::dbWriteTable(con, table_name, conference_standings, overwrite = TRUE)
 
 dbDisconnect(con, shutdown = TRUE)
 
-# Create summary table 
+# Create summary table, but home win percentage needs to take out
+# neutral site games 
+
+home_win_pct <- conf_games |>
+  dplyr::filter(!is.na(home_points)) |>
+  dplyr::filter(!game_id %in% c(
+    "401635525", # fsu gt in ireland
+    "401628373" # arkansas tamu jerry world
+  )) |> 
+  dplyr::group_by(conf) |>
+  dplyr::reframe(
+    games = dplyr::n(),
+    home_win_pct = sum(home_points > away_points) / dplyr::n(),
+  ) |>
+  dplyr::distinct(conf, .keep_all = TRUE) |> 
+  dplyr::select(-games)
+  
+  
 conf_sum_data <- conf_games |>
   dplyr::filter(!is.na(home_points)) |>
   dplyr::group_by(conf) |>
   dplyr::reframe(
+    games = dplyr::n(),
     avg_diff = sum(abs(home_points - away_points)) / dplyr::n(),
-    home_win_pct = sum(
-      dplyr::case_when(
-        conf == "ACC" ~ home_points > away_points - 1,
-        # neutral site game
-        TRUE ~ home_points > away_points
-      )
-    ) / dplyr::if_else(conf == "ACC", dplyr::n() - 1, dplyr::n()),
     close_pct = sum(abs(home_points - away_points) <= 7.5) / dplyr::n(),
     blowout_pct = sum(abs(home_points - away_points) >= 17.5) / dplyr::n()
   ) |>
-  dplyr::distinct(conf, .keep_all = TRUE)
+  dplyr::distinct(conf, .keep_all = TRUE) |> 
+  dplyr::left_join(home_win_pct, by = c("conf")) |> 
+  
 
 # Save table  
 con <- dbConnect(duckdb::duckdb(dbdir = "sources/cfb/cfbdata.duckdb"))
