@@ -64,3 +64,40 @@ where not ${inputs.include_ptiles}
 </DataTable>
 {/if}
 
+### Compare Ratings
+
+```sql rating_comp
+select
+    team_name as team,
+    conf as conference,
+    f_plus_ptile as "F+",
+    fpi_ptile as "FPI",
+from team_ratings
+where conf like '${inputs.conf.value}'
+group by all
+```
+
+<Dropdown data={confs} name=conf value=conf defaultValue="%">
+  <DropdownOption value="%" valueLabel="All conferences"/>
+</Dropdown>
+
+<ScatterPlot 
+    data={rating_comp}
+    x=F+
+    y=FPI
+    yAxisTitle=FPI
+    series=team
+    legend=off
+    chartAreaHeight=360
+    xFmt=pct1
+    yFmt=pct1
+    xMin=0
+    xMax=1
+    yMin=0
+    yMax=1
+    xTickMarks=true
+    yTickMarks=true
+    title="F+ vs FPI percentiles by team"
+    subtitle="Last updated September 30"
+    shape=emptyCircle
+/>

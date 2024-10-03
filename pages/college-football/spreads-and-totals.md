@@ -14,17 +14,24 @@ select
 from spreads_and_totals
 ```
 
+```sql result_filter
+select 
+  result
+from spreads_and_totals
+```
+
 ### Point Spreads and Totals 
 
 - Shows the point spreads and totals for any games between two FBS teams
 - Filter by point spreads under 3.5, double-digits, or all spreads
+- Filter by outright result: whether the team won or lost a game
 - Select a team to see only results related to that specific team
 
 <Details title="Notes">
 
 This data excludes results for games against FCS teams. 
 
-The table shows one row per team, so total games count should be half of the number of rows present in the table.
+The table shows one row per team, so total games count should be half of the number of rows present in the table unless you're filtering by the outright result as a win or loss. 
 </Details>
 
 <ButtonGroup
@@ -37,10 +44,21 @@ The table shows one row per team, so total games count should be half of the num
     <ButtonGroupItem valueLabel = "3.5 or less" value="3.5 or less" />
 </ButtonGroup>
 
+<div>
+<Dropdown name=result_filter title="Outright result" >
+    <DropdownOption valueLabel ="All" value ="%" default/>
+    <DropdownOption valueLabel = "Win" value ="W" />
+    <DropdownOption valueLabel = "Loss" value ="L" />
+</Dropdown>
+</div>
+
 
 ```sql all_teams
 select 
-  count(game_id) / 2 as total_games, 
+  case 
+    when '${inputs.result_filter.value}' in ('W', 'L') then count(game_id)
+    else count(game_id) / 2 
+  end as total_games,
   sum(
     case when is_favorite = true then 1 else 0 end
   ) as favored_count, 
@@ -167,6 +185,11 @@ from
   spreads_and_totals 
 where
   team like '${inputs.team.value}'
+  and  (
+    '${inputs.result_filter.value}' = '%'
+    or 
+    result = '${inputs.result_filter.value}' 
+  )
   and (
     spread_category like '${inputs.spread_group}'
     or '${inputs.spread_group}' = 'All spreads'

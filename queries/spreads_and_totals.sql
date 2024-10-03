@@ -4,6 +4,7 @@ select
     opp,
     location,
     score_sentence,
+    result,
     case 
         when point_spread > 0 then '+' || cast(point_spread as varchar)
         else cast(point_spread as varchar)
@@ -24,5 +25,10 @@ where team like '${inputs.team.value}'
     '${inputs.spread_group}' = 'All spreads'
     or 
     spread_category = '${inputs.spread_group}'
+  )
+  and  (
+    '${inputs.result_filter.value}' = '%'
+    or 
+    result = '${inputs.result_filter.value}' 
   )
 order by week asc
