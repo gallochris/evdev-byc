@@ -31,4 +31,4 @@ where team like '${inputs.team.value}'
     or 
     result = '${inputs.result_filter.value}' 
   )
-order by week asc
+order by week desc
