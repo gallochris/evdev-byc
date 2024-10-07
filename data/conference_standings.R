@@ -6,7 +6,9 @@ source(here::here("data/utils.R"))
 # Determine conference standings 
 conf_games <- cfbfastR::cfbd_game_info(year = 2024) |>
   dplyr::filter(home_conference == away_conference) |>
-  dplyr::filter(game_id != "401636864") |>  # Arizona at Kansas St is not a conference game
+  dplyr::filter(!game_id %in% c("401636618", "401636864")) |>  
+  # Arizona at Kansas St is not a conference game
+  # Baylor and Utah also not a conference game *shakes fist at Big 12*
   # dplyr::filter(!is.na(home_points)) |>
   dplyr::mutate(conf = home_conference) |>
   dplyr::select(game_id, 
@@ -139,7 +141,7 @@ conf_sum_data <- conf_games |>
   ) |>
   dplyr::distinct(conf, .keep_all = TRUE) |> 
   dplyr::left_join(home_win_pct, by = c("conf")) |> 
-  
+  dplyr::mutate(conf =conf_name_lookup(conf)) 
 
 # Save table  
 con <- dbConnect(duckdb::duckdb(dbdir = "sources/cfb/cfbdata.duckdb"))
