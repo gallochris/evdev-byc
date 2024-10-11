@@ -50,6 +50,7 @@ ats_recs <- cfbfastR::cfbd_betting_lines(year = 2024) |>
                   "No" ~ "Yes", 
                   "Push" ~ "Push"),
     result = dplyr::if_else(home_score > away_score, "W", "L"),
+    week = dplyr::if_else(start_date < "2024-08-28", 0, week) 
   ) |>
   dplyr::select(
     game_id,
