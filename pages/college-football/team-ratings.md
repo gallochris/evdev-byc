@@ -46,11 +46,10 @@ where not ${inputs.include_ptiles}
   <Column id=team_name title="Team"/>
   <Column id=f_plus_rk title="Rank" colGroup="F+"/>
   <Column id=f_plus fmt=num2 title="Rating" redNegatives=true colGroup="F+"/>
-  <Column id="f_plus_ptile" fmt="pct" title="% tile" contentType="colorscale" 
-              scaleColor={['#ce5050', 'white', '#6db678']} colGroup="F+"/>
+  <Column id="f_plus_ptile" fmt="pct" title="% tile" contentType=bar barColor=#90EE90 backgroundColor=#f88379 colGroup="F+"/>
   <Column id=fpi_rk title="Rank" colGroup="FPI"/>
   <Column id=fpi fmt=num2 title="Rating" redNegatives=true colGroup="FPI"/>
-  <Column id=fpi_ptile fmt=pct title="% tile" contentType=colorscale scaleColor={['#ce5050', 'white', '#6db678']} colGroup="FPI"/>
+  <Column id=fpi_ptile fmt=pct title="% tile" contentType=bar barColor=#90EE90 backgroundColor=#f88379 colGroup="FPI"/>
 </DataTable>
 
 {:else }
