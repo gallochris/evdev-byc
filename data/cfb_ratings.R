@@ -2,6 +2,8 @@
 # adjusts conference names 
 source(here::here("data/utils.R"))
 
+# Load team ratings to grab fei resume 
+
 # Load teams from cfbfastR for matching 
 teams <- cfbfastR::cfbd_team_info(year = 2024) |> 
   dplyr::select(school, mascot) |> 
