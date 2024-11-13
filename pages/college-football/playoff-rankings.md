@@ -9,9 +9,11 @@ queries:
 
 `Last update: November 12, 2024`
 
+Shows the number of teams by conference ranked in the top 12 (Playoff) and the number of teams ranked in the top 25 (13th to 25th). 
+
 <SankeyDiagram
   data={ratings_sankey} 
-  title="Sankey Chart by Conference" 
+  title="Sankey Diagram by Conference" 
   sourceCol=source
   targetCol=target 
   valueCol=value
