@@ -2,14 +2,28 @@
 sidebar_position: 0
 queries:
   - cfp_rankings: cfp_rankings.sql
+  - ratings_sankey: ratings_comparison.sql
 ---
 
-### College Football Playoff Rankings
+### Playoff Rankings
 
-`Last update: November 6, 2024`
+`Last update: November 12, 2024`
 
+<SankeyDiagram
+  data={ratings_sankey} 
+  title="Sankey Chart by Conference" 
+  sourceCol=source
+  targetCol=target 
+  valueCol=value
+  valueFMT=num1
+  nodeLabels=name
+  linkLabels=full
+  />
+
+
+### Rankings table
 Shows college football rankings and résumé rankings and percentiles from: 
-- [FEI](https://www.bcftoys.com/2024-cfp/): Brian Fremeau's FEI résumé ratings using GWD or a strength of schedule rating that represents the number of losses a team two standard deviations above average would expect to have against the schedule of opponents, and then shows the difference between a team's schedule strength ratings and its actual losses.
+- [FEI](https://www.bcftoys.com/2024-cfp/): Brian Fremeau's FEI résumé ratings using GWD or a strength of schedule rating that represents the number of losses a team two standard deviations above average would expect to have against the schedule of opponents. 
 - [SOR](https://www.espn.com/college-football/fpi/_/view/resume): Strength of record from ESPN reflects chance that an average Top 25 team would have team's record or better, given the schedule.
 
 Ratings updated typically every Wednesday starting November 6. 

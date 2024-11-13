@@ -5,6 +5,7 @@ conf_name_lookup <- function(conf_var) {
     "Pac-12" ~ "Pac-2",
     "Conference USA" ~ "CUSA",
     "FBS Independents" ~ "Independents",
+    "FBS Indep." ~ "Independents",
     "Mid-American" ~ "MAC",
     conf_var ~ conf_var
   )

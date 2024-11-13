@@ -1,3 +1,6 @@
+source(here::here("data/utils.R"))
+source(here::here("data/cfb_ratings.R"))
+
 # Ratings comparison
 # this is experimental right now 
 # commenting out the other code 
@@ -20,19 +23,19 @@
 # targetCol=tier 
 # valueCol=tier_count />
 
-ratings_sankey <- cfb_ratings |> 
+ratings_sankey <- cfb_resume |> 
+  dplyr::mutate(
+   conf = conf_name_lookup(conf) 
+  ) |> 
   dplyr::group_by(conf) |> 
-  dplyr::mutate(rk_sum = f_plus_rk + fpi_rk,
-                rk_avg = rk_sum /2) |> 
   dplyr::summarise(
-    tier_one = sum(rk_avg < 46),
-    tier_two = sum(rk_avg > 45 & rk_avg < 91),
-    tier_three = sum(rk_avg > 90)
+    Playoff = sum(cfp_rank < 13),
+    `Top 25` = sum(cfp_rank > 12)
   ) |> 
   tidyr::pivot_longer(
-    cols = starts_with("tier_"),
-    names_to = "tier",
-    values_to = "tier_count"
+    cols = c(Playoff, `Top 25`),
+    names_to = "Tier",
+    values_to = "Total"
   )
 
 # Save this table to duckdb
