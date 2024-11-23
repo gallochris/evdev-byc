@@ -105,10 +105,10 @@ Select two conferences to see the list of games to date between teams from each 
 </Dropdown>
 
 <DataTable data={non_con_games} rows=all rowNumbers=true>
-  <Column id=date fmt=longdate title="Date"/>
   <Column id=team_with_rk title="Team"/>
+  <Column id=score_sentence contentType=colorscale title="Result"/>
   <Column id=opp_with_rk title="Opponent"/>
   <Column id=location title="Location"/>
-  <Column id=score_sentence title="Result"/>
   <Column id=tempo title="Pace"/>
+  <Column id=date fmt=m/d/y title="Date"/>
 </DataTable>
