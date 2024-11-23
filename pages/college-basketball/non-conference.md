@@ -64,7 +64,7 @@ Shows overall records, win percentage, and average opponent rating by result bet
   <Column id=opp_conf wrapTitle=true title="Opponent League"/>
   <Column id=games title="Games"/>
   <Column id=overall_rec title="Record"/>
-  <Column id=win_pct fmt=pct1 contentType=bar barColor=#90EE90 backgroundColor=#f88379 title="Win %"/>
+  <Column id=win_pct fmt=pct1 contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="Win %"/>
   <Column id=avg_win_rtg title="Win Rating" colGroup="AVG"/>
   <Column id=avg_loss_rtg title="Loss Rating" colGroup="AVG"/>
 </DataTable>
@@ -93,6 +93,12 @@ Shows overall records, win percentage, and average opponent rating by result bet
 
 ### Gamelog 
 
+```sql result_filter
+select 
+  result
+from non_con_games
+```
+
 Select two conferences to see the list of games to date between teams from each conference. 
 
 
@@ -104,10 +110,17 @@ Select two conferences to see the list of games to date between teams from each 
   <DropdownOption value="%" valueLabel="Opp Conference"/>
 </Dropdown>
 
+<Dropdown name=result_filter title="Result" >
+    <DropdownOption valueLabel ="All" value ="%" default/>
+    <DropdownOption valueLabel = "Win" value ="W" />
+    <DropdownOption valueLabel = "Loss" value ="L" />
+</Dropdown>
+
 <DataTable data={non_con_games} rows=all rowNumbers=true>
   <Column id=team_with_rk title="Team"/>
-  <Column id=score_sentence contentType=colorscale title="Result"/>
+  <Column id=delta contentType=delta fmt=# title="+/-"/>
   <Column id=opp_with_rk title="Opponent"/>
+  <Column id=score_sentence contentType=colorscale title="Result"/>
   <Column id=location title="Location"/>
   <Column id=tempo title="Pace"/>
   <Column id=date fmt=m/d/y title="Date"/>
