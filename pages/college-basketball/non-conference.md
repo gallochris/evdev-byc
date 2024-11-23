@@ -61,7 +61,7 @@ Shows overall records, win percentage, and average opponent rating by result bet
 
 <DataTable data={power_leagues} rows=all rowNumbers=true>
   <Column id=conf title="Conference"/>
-  <Column id=opp_conf title="Opponent League"/>
+  <Column id=opp_conf wrapTitle=true title="Opponent League"/>
   <Column id=games title="Games"/>
   <Column id=overall_rec title="Record"/>
   <Column id=win_pct fmt=pct1 contentType=bar barColor=#90EE90 backgroundColor=#f88379 title="Win %"/>
@@ -77,7 +77,7 @@ Shows overall records, win percentage, and average opponent rating by result bet
 
 <DataTable data={hth_records} rows=all rowNumbers=true>
   <Column id=conf title="Conference"/>
-  <Column id=opp_conf title="Opponent League"/>
+  <Column id=opp_conf wrapTitle=true title="Opponent League"/>
   <Column id=games title="Games"/>
   <Column id=overall_rec title="Record"/>
   <Column id=win_pct fmt=pct1 contentType=bar barColor=#90EE90 backgroundColor=#f88379 title="Win %"/>
