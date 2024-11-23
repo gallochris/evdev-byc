@@ -21,8 +21,12 @@ Data includes:
 - conference standings and point differentials 
 - point spreads and totals 
 
+As of November 22, I'm starting to add 2024-25 college basketball data. This includes:
+- non-conference results 
+- head-to-head conference records
+
 ### Data sources
 
-Data sources include [cfbfastR](https://cfbfastr.sportsdataverse.org/index.html), [bcftoys.com](https://www.bcftoys.com/), and [ESPN.com](https://www.espn.com/). 
+Data sources include [cfbfastR](https://cfbfastr.sportsdataverse.org/index.html), [bcftoys.com](https://www.bcftoys.com/), and [ESPN.com](https://www.espn.com/), [cbbdata](https://github.com/andreweatherman/cbbdata/tree/main) + [barttorvik.com](https://barttorvik.com/#), and [hoopR](https://hoopr.sportsdataverse.org/).
 
 The data is cleaned and transformed using the R programming language. This site is built using [evidence.dev](https://evidence.dev/) and [duckdb](https://duckdb.org/). 

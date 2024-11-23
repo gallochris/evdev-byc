@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 queries:
-  - spreads_and_totals: spreads_and_totals.sql
+  - spreads_and_totals: college-football/spreads_and_totals.sql
 ---
 
 ```sql teams

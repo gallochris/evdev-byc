@@ -1,7 +1,7 @@
 # Load the utilities 
 # loads fbs power conferences with championship game
 # adjusts conference names 
-source(here::here("data/utils.R"))
+source(here::here("data/college-football/utils.R"))
 
 # ATS data requires lots of fetching from other sources 
 # First grab the the location of games played

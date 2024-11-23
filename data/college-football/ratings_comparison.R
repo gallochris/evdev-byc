@@ -1,5 +1,5 @@
-source(here::here("data/utils.R"))
-source(here::here("data/cfb_ratings.R"))
+source(here::here("data/college-football/utils.R"))
+source(here::here("data/college-football/cfb_ratings.R"))
 
 # Ratings comparison
 # this is experimental right now 

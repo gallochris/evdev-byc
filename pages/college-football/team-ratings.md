@@ -1,8 +1,8 @@
 ---
 sidebar_position: 1
 queries:
-  - team_ratings: team_ratings.sql
-  - ratings_comparison: ratings_comparison.sql
+  - team_ratings: college-football/team_ratings.sql
+  - ratings_comparison: college-football/ratings_comparison.sql
 ---
 
 ### Team ratings 

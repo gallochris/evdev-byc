@@ -1,7 +1,7 @@
 # Load the utilities 
 # loads fbs power conferences with championship game
 # adjusts conference names 
-source(here::here("data/utils.R"))
+source(here::here("data/college-football/utils.R"))
 
 # Determine conference standings 
 conf_games <- cfbfastR::cfbd_game_info(year = 2024) |>

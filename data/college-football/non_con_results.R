@@ -1,6 +1,6 @@
 # Load the utilities 
 # adjusts conference names 
-source(here::here("data/utils.R"))
+source(here::here("data/college-football/utils.R"))
 
 # Conference H2H records for FBS only 
 

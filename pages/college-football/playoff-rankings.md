@@ -1,8 +1,8 @@
 ---
 sidebar_position: 0
 queries:
-  - cfp_rankings: cfp_rankings.sql
-  - ratings_sankey: ratings_comparison.sql
+  - cfp_rankings: college-football/cfp_rankings.sql
+  - ratings_sankey: college-football/ratings_comparison.sql
 ---
 
 ### Playoff Rankings

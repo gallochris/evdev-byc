@@ -1,8 +1,8 @@
 ---
 sidebar_position: 2
 queries:
-  - conference_standings: conference_standings.sql
-  - non_con_results: non_con_results.sql
+  - conference_standings: college-football/conference_standings.sql
+  - non_con_results: college-football/non_con_results.sql
 ---
 
 ```sql confs
