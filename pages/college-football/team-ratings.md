@@ -7,7 +7,7 @@ queries:
 
 ### Team ratings 
 
-`Last update: November 18, 2024`
+`Last update: November 25, 2024`
 
 Shows public facing team ratings, rank, and percentile from: 
 - [F+](https://www.bcftoys.com/2024-fplus/): combination of Brian Fremeau's FEI ratings with Bill Connelly's SP+ ratings
@@ -97,7 +97,7 @@ group by all
     xTickMarks=true
     yTickMarks=true
     title="F+ vs FPI percentiles by team"
-    subtitle="Last updated November 18"
+    subtitle="Last updated November 25"
     shape=emptyCircle
     colorPalette={['#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026']}
 />

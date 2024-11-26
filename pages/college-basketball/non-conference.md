@@ -9,13 +9,6 @@ queries:
 
 Shows overall records, win percentage, and average opponent rating by result between two conferences.
 
-```sql confs
-  select 
-    conf, 
-    opp_conf
-  from non_con_data
-```
-
 ```sql power_leagues
   select  
     conf,
@@ -36,17 +29,6 @@ Shows overall records, win percentage, and average opponent rating by result bet
   )
 ```
 
-```sql confs_power_leagues
-  select 
-    conf, 
-    opp_conf
-  from non_con_data
-  where (
-    conf in ('ACC', 'Big Ten', 'SEC', 'Big 12', 'Big East')
-      and opp_conf in ('ACC', 'Big Ten', 'SEC', 'Big 12', 'Big East')
-    )
-```
-
 <Checkbox
     title="Power Leagues" 
     name=power_leagues
@@ -55,7 +37,7 @@ Shows overall records, win percentage, and average opponent rating by result bet
 
 {#if inputs.power_leagues == true}
 
-<Dropdown data={confs_power_leagues} name=conf value=conf defaultValue="%">
+<Dropdown data={power_leagues} name=conf value=conf defaultValue="%">
   <DropdownOption value="%" valueLabel="Conference"/>
 </Dropdown>
 
@@ -71,7 +53,7 @@ Shows overall records, win percentage, and average opponent rating by result bet
 
 {:else }
 
-<Dropdown data={confs} name=conf value=conf defaultValue="%">
+<Dropdown data={hth_records} name=conf value=conf defaultValue="%">
   <DropdownOption value="%" valueLabel="Conference"/>
 </Dropdown>
 
@@ -84,11 +66,8 @@ Shows overall records, win percentage, and average opponent rating by result bet
   <Column id=avg_win_rtg title="Win Rating" colGroup="AVG"/>
   <Column id=avg_loss_rtg title="Loss Rating" colGroup="AVG"/>
 </DataTable>
+
 {/if}
-
-
-
-
 
 
 ### Gamelog 
@@ -102,11 +81,11 @@ from non_con_games
 Select two conferences to see the list of games to date between teams from each conference. 
 
 
-<Dropdown data={confs} name=conf value=conf defaultValue="%">
+<Dropdown data={non_con_games} name=conf value=conf defaultValue="%">
   <DropdownOption value="%" valueLabel="Conference"/>
 </Dropdown>
 
-<Dropdown data={confs} name=opp_conf value=opp_conf defaultValue="%">
+<Dropdown data={non_con_games} name=opp_conf value=opp_conf defaultValue="%">
   <DropdownOption value="%" valueLabel="Opp Conference"/>
 </Dropdown>
 
