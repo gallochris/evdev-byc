@@ -29,11 +29,11 @@ ratings_sankey <- cfb_resume |>
   ) |> 
   dplyr::group_by(conf) |> 
   dplyr::summarise(
-    Playoff = sum(cfp_rank < 13),
+    `Top 12` = sum(cfp_rank < 13),
     `Top 25` = sum(cfp_rank > 12)
   ) |> 
   tidyr::pivot_longer(
-    cols = c(Playoff, `Top 25`),
+    cols = c(`Top 12`, `Top 25`),
     names_to = "Tier",
     values_to = "Total"
   )

@@ -96,10 +96,11 @@ non_con_ratings <- non_con_data |>
                                         pts_allowed),
                 team_with_rk = paste0(team_rk, " ", team),
                 opp_with_rk = paste0(opp_rk, " ", opp),
-                tempo = round(tempo, 0)
+                tempo = round(tempo, 0),
+                delta = pts_scored - pts_allowed
   ) |> 
   dplyr::select(date, team_with_rk, conf, opp_with_rk,
-                opp_conf, location, result, 
+                opp_conf, location, result, delta, 
                 score_sentence, tempo, team_rk, opp_rk 
                 ) 
   
@@ -137,9 +138,7 @@ hth_recs <- non_con_ratings |>
                                   0, mean(opp_rk[result == "L"], 
                                           na.rm = TRUE))
   ) |> 
-  dplyr::mutate(overall_rec = paste0(wins, "-", losses)
-) |> 
-  dplyr::select(conf, opp_conf, games, overall_rec, win_pct, avg_win_rtg, 
+  dplyr::select(conf, opp_conf, games, wins, losses, win_pct, avg_win_rtg, 
                 avg_loss_rtg) 
 
 

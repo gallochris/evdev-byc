@@ -7,7 +7,7 @@ queries:
 
 ### Playoff Rankings
 
-`Last update: November 19, 2024`
+`Last update: November 26, 2024`
 
 Shows the number of teams by conference ranked in the top 12 (Playoff) and the number of teams ranked in the top 25 (13th to 25th). 
 
