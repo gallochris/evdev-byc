@@ -45,7 +45,7 @@ Shows overall records, win percentage, and average opponent rating by result bet
 </Dropdown>
 
 
-<DataTable data={power_leagues} rows=all groupBy=conf groupType=section subtotals=true totalRow=true>
+<DataTable data={power_leagues} rows=all groupBy=conf groupType=section groupNamePosition=top subtotals=true totalRowColor=#fff0cc totalRow=true>
   <Column id=opp_conf wrapTitle=true title="Conference"/>
   <Column id=conf title="League"/>
   <Column id=games title="Games"/>
