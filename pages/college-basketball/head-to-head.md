@@ -19,7 +19,15 @@ Shows overall records, win percentage, and average opponent rating by result bet
     losses,
     win_pct,
     avg_win_rtg,
-    avg_loss_rtg
+    avg_loss_rtg,
+    q1_wins,
+    q1_losses,
+    q2_wins, 
+    q2_losses,
+    q3_wins,
+    q3_losses,
+    q4_wins,
+    q4_losses
   from hth_records
   where conf like '${inputs.conf.value}'
   and (
@@ -52,8 +60,14 @@ Shows overall records, win percentage, and average opponent rating by result bet
   <Column id=wins title="W"/>
   <Column id=losses title="L"/>
   <Column id=win_pct fmt=pct1 totalAgg=weightedMean  weightCol=games contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="Win %"/>
-  <Column id=avg_win_rtg title="Win Rating" totalAgg=mean colGroup="AVG"/>
-  <Column id=avg_loss_rtg title="Loss Rating" totalAgg=mean colGroup="AVG"/>
+  <Column id=q1_wins title="W" colGroup="Quad 1"/>
+  <Column id=q1_losses title="L" colGroup="Quad 1"/>
+  <Column id=q2_wins title="W" colGroup="Quad 2"/>
+  <Column id=q2_losses title="L" colGroup="Quad 2"/>
+  <Column id=q3_wins title="W" colGroup="Quad 3"/>
+  <Column id=q3_losses title="L" colGroup="Quad 3"/>
+  <Column id=q4_wins title="W" colGroup="Quad 4"/>
+  <Column id=q4_losses title="L" colGroup="Quad 4"/>
 </DataTable>
 
 {:else }
@@ -73,8 +87,14 @@ Shows overall records, win percentage, and average opponent rating by result bet
   <Column id=wins title="W"/>
   <Column id=losses title="L"/>
   <Column id=win_pct fmt=pct1 totalAgg=weightedMean weightCol=games contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="Win %"/>
-  <Column id=avg_win_rtg title="Win Rating" totalAgg=mean colGroup="AVG"/>
-  <Column id=avg_loss_rtg title="Loss Rating" totalAgg=mean colGroup="AVG"/>
+  <Column id=q1_wins title="W" colGroup="Quad 1"/>
+  <Column id=q1_losses title="L" colGroup="Quad 1"/>
+  <Column id=q2_wins title="W" colGroup="Quad 2"/>
+  <Column id=q2_losses title="L" colGroup="Quad 2"/>
+  <Column id=q3_wins title="W" colGroup="Quad 3"/>
+  <Column id=q3_losses title="L" colGroup="Quad 3"/>
+  <Column id=q4_wins title="W" colGroup="Quad 4"/>
+  <Column id=q4_losses title="L" colGroup="Quad 4"/>
 </DataTable>
 
 {/if}

@@ -36,6 +36,7 @@ conf_name_lookup <- function(conf_var) {
 # see long case statement 
 non_con_data <-
   cbbdata::cbd_torvik_game_stats(year = 2025, type = "nc") |> 
+  cbbdata::cbd_add_net_quad() |> 
   dplyr::mutate(conf = dplyr::case_match(team, # fix team naming for leagues
     "Charleston" ~ "Horz",
     "LIU" ~ "NEC",
@@ -101,7 +102,7 @@ non_con_ratings <- non_con_data |>
   ) |> 
   dplyr::select(date, team_with_rk, conf, opp_with_rk,
                 opp_conf, location, result, delta, 
-                score_sentence, tempo, team_rk, opp_rk 
+                score_sentence, tempo, team_rk, opp_rk, quad
                 ) 
   
     
@@ -136,10 +137,19 @@ hth_recs <- non_con_ratings |>
                                          na.rm = TRUE)),
     avg_loss_rtg = dplyr::if_else(losses == 0, 
                                   0, mean(opp_rk[result == "L"], 
-                                          na.rm = TRUE))
+                                          na.rm = TRUE)),
+    q1_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 1"), 0),
+    q1_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 1"), 0),
+    q2_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 2"), 0),
+    q2_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 2"), 0),
+    q3_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 3"), 0),
+    q3_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 3"), 0),
+    q4_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 4"), 0),
+    q4_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 4"), 0)
   ) |> 
   dplyr::select(conf, opp_conf, games, wins, losses, win_pct, avg_win_rtg, 
-                avg_loss_rtg) 
+                avg_loss_rtg, q1_wins, q1_losses, q2_wins, q2_losses, 
+                q3_wins, q3_losses, q4_wins, q4_losses) 
 
 
 # Save the table to duckdb
