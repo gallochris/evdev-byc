@@ -83,7 +83,6 @@ Shows overall records, win percentage, and average opponent rating by result bet
 <DataTable data={hth_records} rows=all groupBy=conf groupType=section subtotals=true totalRow=true groupNamePosition=top>
   <Column id=opp_conf wrapTitle=true title="Conference"/>
   <Column id=conf title="League"/>
-  <Column id=games title="Games"/>
   <Column id=wins title="W"/>
   <Column id=losses title="L"/>
   <Column id=win_pct fmt=pct1 totalAgg=weightedMean weightCol=games contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="Win %"/>

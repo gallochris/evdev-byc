@@ -1,7 +1,7 @@
 ---
 title: Gamelog
 hide_title: true
-sidebar_position: 2
+sidebar_position: 3
 queries: 
   - non_con_games: college-basketball/non_con_games.sql
 ---

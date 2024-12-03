@@ -1,42 +1,16 @@
 # -----------------------------
-# clean conference names - this should be a utility file probably 
-conf_name_lookup <- function(conf_var) {
-  conf_var = dplyr::case_match(
-    conf_var,
-    "B12" ~ "Big 12",
-    "BE" ~ "Big East",
-    "P12" ~ "Pac-12",
-    "B10" ~ "Big Ten",
-    "Amer" ~ "American",
-    "SB" ~ "Sun Belt",
-    "Slnd" ~ "Southland",
-    "BW" ~ "Big West",
-    "SC" ~ "Southern",
-    "AE" ~ "America East",
-    "BSth" ~ "Big South",
-    "ASun" ~ "Atlantic Sun",
-    "Pat" ~ "Patriot",
-    "Horz" ~ "Horizon",
-    "BSky" ~ "Big Sky",
-    "OVC" ~ "Ohio Valley",
-    "Sum" ~ "Summit",
-    "A10" ~ "Atlantic 10",
-    "MWC" ~ "Mountain West",
-    "MVC" ~ "Missouri Valley",
-    "NEC" ~ "Northeast",
-    "MAC" ~ "Mid-American",
-    "MAAC" ~ "Metro Atlantic",
-    "ind" ~ "Independent",
-    conf_var ~ conf_var
-  )
-}
+# Load the utilities 
+# adjusts conference names 
+source(here::here("data/college-basketball/utils.R"))
 
-# Fetch all non-conference games 
+# -----------------------------
+# Fetch all 
 # missing some conference mappings unfortunately right now 
 # see long case statement 
-non_con_data <-
-  cbbdata::cbd_torvik_game_stats(year = 2025, type = "nc") |> 
-  cbbdata::cbd_add_net_quad() |> 
+sched_data <-
+  cbbdata::cbd_torvik_team_schedule(year = 2025) |> 
+  dplyr::mutate(opp = team_name_lookup(opp)) |>
+  dplyr::mutate(team = team_name_lookup(team)) |> 
   dplyr::mutate(conf = dplyr::case_match(team, # fix team naming for leagues
     "Charleston" ~ "Horz",
     "LIU" ~ "NEC",
@@ -60,7 +34,9 @@ non_con_data <-
     .default = opp_conf)
   ) |> 
   dplyr::mutate(opp_conf = conf_name_lookup(opp_conf)) |>
-  dplyr::mutate(conf = conf_name_lookup(conf)) 
+  dplyr::mutate(conf = conf_name_lookup(conf)) |> 
+  cbbdata::cbd_add_net_quad() |> 
+  dplyr::filter(date < today_date)
  
 # Now add in torvik ratings
 current_ratings <- cbbdata::cbd_torvik_ratings(year = 2025) |> 
@@ -80,7 +56,7 @@ current_ratings <- cbbdata::cbd_torvik_ratings(year = 2025) |>
 
 
 # Join the ratings with the teams 
-non_con_ratings <- non_con_data |>
+games_with_ratings <- non_con_data |>
   dplyr::left_join(
     current_ratings |> 
       dplyr::select(team, barthag, barthag_rk) |> 
@@ -93,6 +69,14 @@ non_con_ratings <- non_con_data |>
       dplyr::rename(opp_barthag = barthag, opp_rk = barthag_rk),
     by = c("opp" = "team")
   ) |> 
+  dplyr::left_join(
+    game_results,
+    by = c("game_id", "team")
+  )
+
+# -----------------------------
+non_con_ratings <- games_with_ratings |> 
+  dplyr::filter(type == "nc") |> 
   dplyr::mutate(score_sentence = paste0(result, ", ", pts_scored, "-", 
                                         pts_allowed),
                 team_with_rk = paste0(team_rk, " ", team),
@@ -100,12 +84,12 @@ non_con_ratings <- non_con_data |>
                 tempo = round(tempo, 0),
                 delta = pts_scored - pts_allowed
   ) |> 
-  dplyr::select(date, team_with_rk, conf, opp_with_rk,
+  dplyr::select(game_id, date, team_with_rk, conf, opp_with_rk,
                 opp_conf, location, result, delta, 
-                score_sentence, tempo, team_rk, opp_rk, quad
-                ) 
-  
-    
+                score_sentence, tempo, team_rk, opp_rk, net, quad
+                ) |> 
+  dplyr::arrange(date)
+
 # Save the table to duckdb
 library(duckdb)
 library(DBI)
@@ -117,8 +101,6 @@ table_name <- "non_con_games"
 duckdb::dbWriteTable(con, table_name, non_con_ratings, overwrite = TRUE)
 
 dbDisconnect(con, shutdown = TRUE)
-
-
 
 # -----------------------------
 # Create summary table of conference against conference 
@@ -161,5 +143,39 @@ con <- dbConnect(duckdb::duckdb(dbdir = "sources/cbb/cbbdata.duckdb"))
 table_name <- "hth_recs"
 
 duckdb::dbWriteTable(con, table_name, hth_recs, overwrite = TRUE)
+
+dbDisconnect(con, shutdown = TRUE)
+
+
+# Group by conference and summarize 
+quad_summary <- games_with_ratings |> 
+  dplyr::group_by(conf) |> 
+  dplyr::summarise(
+    q1_games = dplyr::coalesce(sum(quad == "Quadrant 1"), 0),
+    q1_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 1"), 0),
+    q1_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 1"), 0),
+    q2_games = dplyr::coalesce(sum(quad == "Quadrant 2"), 0),
+    q2_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 2"), 0),
+    q2_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 2"), 0),
+    q3_games = dplyr::coalesce(sum(quad == "Quadrant 3"), 0),
+    q3_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 3"), 0),
+    q3_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 3"), 0),
+    q4_games = dplyr::coalesce(sum(quad == "Quadrant 4"), 0),
+    q4_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 4"), 0),
+    q4_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 4"), 0)
+  ) |> 
+  dplyr::select(conf, q1_games, q1_wins, q1_losses, q2_games, q2_wins, q2_losses, 
+                q3_games, q3_wins, q3_losses, q4_games, q4_wins, q4_losses) 
+
+
+# Save the table to duckdb
+library(duckdb)
+library(DBI)
+
+con <- dbConnect(duckdb::duckdb(dbdir = "sources/cbb/cbbdata.duckdb"))
+
+table_name <- "quad_summary"
+
+duckdb::dbWriteTable(con, table_name, quad_summary, overwrite = TRUE)
 
 dbDisconnect(con, shutdown = TRUE)
