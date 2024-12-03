@@ -56,7 +56,7 @@ current_ratings <- cbbdata::cbd_torvik_ratings(year = 2025) |>
 
 
 # Join the ratings with the teams 
-games_with_ratings <- non_con_data |>
+games_with_ratings <- sched_data |>
   dplyr::left_join(
     current_ratings |> 
       dplyr::select(team, barthag, barthag_rk) |> 
@@ -74,6 +74,8 @@ games_with_ratings <- non_con_data |>
     by = c("game_id", "team")
   )
 
+
+
 # -----------------------------
 non_con_ratings <- games_with_ratings |> 
   dplyr::filter(type == "nc") |> 
@@ -88,7 +90,7 @@ non_con_ratings <- games_with_ratings |>
                 opp_conf, location, result, delta, 
                 score_sentence, tempo, team_rk, opp_rk, net, quad
                 ) |> 
-  dplyr::arrange(date)
+  dplyr::arrange(desc(date))
 
 # Save the table to duckdb
 library(duckdb)
@@ -149,23 +151,29 @@ dbDisconnect(con, shutdown = TRUE)
 
 # Group by conference and summarize 
 quad_summary <- games_with_ratings |> 
+  dplyr::filter(type != "nond1") |> 
   dplyr::group_by(conf) |> 
   dplyr::summarise(
     q1_games = dplyr::coalesce(sum(quad == "Quadrant 1"), 0),
     q1_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 1"), 0),
     q1_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 1"), 0),
+    q1_win_pct = q1_wins / q1_games,
     q2_games = dplyr::coalesce(sum(quad == "Quadrant 2"), 0),
     q2_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 2"), 0),
     q2_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 2"), 0),
+    q2_win_pct = q2_wins / q2_games,
     q3_games = dplyr::coalesce(sum(quad == "Quadrant 3"), 0),
     q3_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 3"), 0),
     q3_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 3"), 0),
+    q3_win_pct = q3_wins / q3_games,
     q4_games = dplyr::coalesce(sum(quad == "Quadrant 4"), 0),
     q4_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 4"), 0),
-    q4_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 4"), 0)
+    q4_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 4"), 0),
+    q4_win_pct = q4_wins / q4_games
   ) |> 
-  dplyr::select(conf, q1_games, q1_wins, q1_losses, q2_games, q2_wins, q2_losses, 
-                q3_games, q3_wins, q3_losses, q4_games, q4_wins, q4_losses) 
+  dplyr::select(conf, q1_games, q1_wins, q1_losses, q1_win_pct, q2_games, q2_wins, 
+                q2_losses, q2_win_pct, q3_games, q3_wins, q3_losses, q3_win_pct, 
+                q4_games, q4_wins, q4_losses, q4_win_pct) 
 
 
 # Save the table to duckdb

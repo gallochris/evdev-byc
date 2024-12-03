@@ -19,4 +19,3 @@ select
       or 
       result = '${inputs.result_filter.value}' 
     )
-

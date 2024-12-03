@@ -3,13 +3,17 @@ select
       q1_games,
       q1_wins,
       q1_losses,
+      q1_win_pct,
       q2_games,
       q2_wins, 
       q2_losses,
+      q2_win_pct,
       q3_games,
       q3_wins,
       q3_losses,
+      q3_win_pct,
       q4_games,
       q4_wins,
-      q4_losses
+      q4_losses,
+      q4_win_pct,
   from cbb.quad_summary
