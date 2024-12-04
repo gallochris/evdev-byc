@@ -31,11 +31,20 @@ Select two conferences to see the list of games to date between teams from each 
     <DropdownOption valueLabel = "Loss" value ="L" />
 </Dropdown>
 
+<Dropdown name=quad_filter title="Quadrant" >
+    <DropdownOption valueLabel ="All" value ="%" default/>
+    <DropdownOption valueLabel = "Q1" value ="Quadrant 1" />
+    <DropdownOption valueLabel = "Q2" value ="Quadrant 2" />
+    <DropdownOption valueLabel = "Q3" value ="Quadrant 3" />
+    <DropdownOption valueLabel = "Q4" value ="Quadrant 4" />
+</Dropdown>
+
 <DataTable data={non_con_games} rows=all search=true rowNumbers=true>
   <Column id=team_with_rk title="Team"/>
   <Column id=delta contentType=delta fmt=# title="+/-"/>
   <Column id=opp_with_rk title="Opponent"/>
   <Column id=score_sentence contentType=colorscale title="Result"/>
   <Column id=location title="Location"/>
+  <Column id=quad title="Quad"/>
   <Column id=date fmt=m/d/y title="Date"/>
 </DataTable>

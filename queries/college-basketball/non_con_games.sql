@@ -10,7 +10,8 @@ select
       delta,
       tempo,
       team_rk,
-      opp_rk
+      opp_rk,
+      quad
   from cbb.non_con_data
   where conf like '${inputs.conf.value}'
     and opp_conf like '${inputs.opp_conf.value}'
@@ -18,4 +19,9 @@ select
       '${inputs.result_filter.value}' = '%'
       or 
       result = '${inputs.result_filter.value}' 
+    )
+    and (
+      '${inputs.quad_filter.value}' = '%'
+      or 
+      quad = '${inputs.quad_filter.value}' 
     )

@@ -48,6 +48,7 @@ team_name_lookup <- function(team_var) {
 # today's date
 today_date <- format(Sys.Date(), "%Y-%m-%d")
 
+
 # load schedule to get proper locations 
 game_results <- cbbdata::cbd_torvik_game_stats(year = 2025) |> 
   dplyr::select(game_id, team, result, pts_scored, pts_allowed, tempo) |> 
