@@ -2,60 +2,26 @@
 # Load the utilities 
 # adjusts conference names 
 source(here::here("data/college-basketball/utils.R"))
+source(here::here("data/college-basketball/base_query.R"))
 
 # -----------------------------
-# Fetch all 
-# missing some conference mappings unfortunately right now 
-# see long case statement 
-sched_data <-
-  cbbdata::cbd_torvik_team_schedule(year = 2025) |> 
-  dplyr::mutate(opp = team_name_lookup(opp)) |>
-  dplyr::mutate(team = team_name_lookup(team)) |> 
-  dplyr::mutate(conf = dplyr::case_match(team, # fix team naming for leagues
-    "Charleston" ~ "Horz",
-    "LIU" ~ "NEC",
-    "Detroit Mercy" ~ "Horz",
-    "Purdue Fort Wayne" ~ "Horz",
-    "Louisiana" ~ "SB",
-    "N.C. State" ~ "ACC",
-    "IU Indy" ~ "Horz",
-    "Saint Francis" ~ "NEC",
-    .default = conf)
-  ) |> 
-  dplyr::mutate(opp_conf = dplyr::case_match(opp,
-    "Charleston" ~ "Horz",
-    "LIU" ~ "NEC",
-    "Detroit Mercy" ~ "Horz",
-    "Purdue Fort Wayne" ~ "Horz",
-    "Louisiana" ~ "SB",
-    "N.C. State" ~ "ACC",
-    "IU Indy" ~ "Horz",
-    "Saint Francis" ~ "NEC",
-    .default = opp_conf)
-  ) |> 
+# load schedule and add net data
+sched_data <- schedule |> 
   dplyr::mutate(opp_conf = conf_name_lookup(opp_conf)) |>
   dplyr::mutate(conf = conf_name_lookup(conf)) |> 
-  cbbdata::cbd_add_net_quad() |> 
-  dplyr::filter(date < today_date)
+  dplyr::filter(date < today_date) |> 
+  dplyr::mutate(team = team_name_lookup(team)) |> # revert names to get quad
+  dplyr::mutate(opp = team_name_lookup(opp)) |>  # data
+  cbbdata::cbd_add_net_quad() |> # add quad data and net
+  dplyr::mutate(team = team_name_update(team)) |> # now revert back
+  dplyr::mutate(opp = team_name_update(opp)) # to match other data, wow
  
-# Now add in torvik ratings
-current_ratings <- cbbdata::cbd_torvik_ratings(year = 2025) |> 
-  dplyr::mutate(team = dplyr::case_match(team,
-                 "North Carolina St." ~ "N.C. State",
-                 "College of Charleston" ~ "Charleston",
-                 "LIU Brooklyn" ~ "LIU",
-                 "Detroit" ~ "Detroit Mercy",
-                 "Fort Wayne" ~ "Purdue Fort Wayne",
-                 "Louisiana Lafayette" ~ "Louisiana",
-                 "IUPUI" ~ "IU Indy",
-                 "St. Francis PA" ~ "Saint Francis",
-                 .default = team
-                 )) |> 
+# Add in torvik ratings
+current_ratings <- ratings |> 
   dplyr::mutate(conf = conf_name_lookup(conf)) |> 
   dplyr::select(team, conf, barthag, barthag_rk)
 
-
-# Join the ratings with the teams 
+# Join the ratings with the game results
 games_with_ratings <- sched_data |>
   dplyr::left_join(
     current_ratings |> 
@@ -69,14 +35,14 @@ games_with_ratings <- sched_data |>
       dplyr::rename(opp_barthag = barthag, opp_rk = barthag_rk),
     by = c("opp" = "team")
   ) |> 
-  dplyr::left_join(
-    game_results,
-    by = c("game_id", "team")
-  )
-
-
+  dplyr::inner_join(
+    results,
+    by = c("game_id", "team", "opp", "type", 
+           "date", "year")
+  ) 
 
 # -----------------------------
+# build non-conference data 
 non_con_ratings <- games_with_ratings |> 
   dplyr::filter(type == "nc") |> 
   dplyr::mutate(score_sentence = paste0(result, ", ", pts_scored, "-", 
@@ -106,7 +72,6 @@ dbDisconnect(con, shutdown = TRUE)
 
 # -----------------------------
 # Create summary table of conference against conference 
-
 
 # Find the head to head conference records 
 hth_recs <- non_con_ratings |> 
@@ -149,9 +114,8 @@ duckdb::dbWriteTable(con, table_name, hth_recs, overwrite = TRUE)
 dbDisconnect(con, shutdown = TRUE)
 
 
-# Group by conference and summarize 
+# Group by conference and summarize by quads
 quad_summary <- games_with_ratings |> 
-  dplyr::filter(type != "nond1") |> 
   dplyr::group_by(conf) |> 
   dplyr::summarise(
     q1_games = dplyr::coalesce(sum(quad == "Quadrant 1"), 0),
@@ -174,7 +138,6 @@ quad_summary <- games_with_ratings |>
   dplyr::select(conf, q1_games, q1_wins, q1_losses, q1_win_pct, q2_games, q2_wins, 
                 q2_losses, q2_win_pct, q3_games, q3_wins, q3_losses, q3_win_pct, 
                 q4_games, q4_wins, q4_losses, q4_win_pct) 
-
 
 # Save the table to duckdb
 library(duckdb)

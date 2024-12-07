@@ -1,4 +1,4 @@
-# clean conference names - this should be a utility file probably 
+# clean conference names - this should be a utility file probably
 conf_name_lookup <- function(conf_var) {
   conf_var = dplyr::case_match(
     conf_var,
@@ -30,6 +30,41 @@ conf_name_lookup <- function(conf_var) {
   )
 }
 
+# today's date
+today_date <- format(Sys.Date(), "%Y-%m-%d")
+
+
+team_name_update <- function(team_var) {
+  team_var = dplyr::case_match(
+    team_var,
+    "Charleston" ~ "College of Charleston",
+    "LIU" ~ "LIU Brooklyn",
+    "Detroit Mercy" ~ "Detroit",
+    "Purdue Fort Wayne" ~ "Fort Wayne",
+    "Louisiana" ~ "Louisiana Lafayette",
+    "N.C. State" ~ "North Carolina St.",
+    "IU Indy" ~ "IUPUI",
+    "Saint Francis" ~ "St. Francis PA",
+    team_var ~ team_var
+  )
+}
+
+conf_name_update <- function(team_var) {
+  dplyr::case_match(
+    team_var,
+    "College of Charleston" ~ "Horz",
+    "LIU Brooklyn" ~ "NEC",
+    "Detroit" ~ "Horz",
+    "Fort Wayne" ~ "Horz",
+    "Louisiana Lafayette" ~ "SB",
+    "North Carolina St." ~ "ACC",
+    "IUPUI" ~ "Horz",
+    "St. Francis PA" ~ "NEC",
+    .default = team_var
+  )
+}
+
+# reverse this name lookup to add quad data
 team_name_lookup <- function(team_var) {
   team_var = dplyr::case_match(
     team_var,
@@ -44,13 +79,3 @@ team_name_lookup <- function(team_var) {
     team_var ~ team_var
   )
 }
-
-# today's date
-today_date <- format(Sys.Date(), "%Y-%m-%d")
-
-
-# load schedule to get proper locations 
-game_results <- cbbdata::cbd_torvik_game_stats(year = 2025) |> 
-  dplyr::select(game_id, team, result, pts_scored, pts_allowed, tempo) |> 
-  dplyr::filter(!is.na(result))
-
