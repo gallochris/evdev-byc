@@ -9,7 +9,12 @@ source(here::here("data/college-basketball/utils.R"))
 
 # schedule
 schedule <- cbbdata::cbd_torvik_team_schedule(year = 2025) |>
-  dplyr::filter(type != "nond1") # filer out nond1 games
+  dplyr::filter(type != "nond1") |> # filer out nond1 games
+  dplyr::mutate(team = team_name_lookup(team)) |> # revert names to get quad
+  dplyr::mutate(opp = team_name_lookup(opp)) |>  # data
+  cbbdata::cbd_add_net_quad() |> # add quad data and net
+  dplyr::mutate(team = team_name_update(team)) |> # now revert back
+  dplyr::mutate(opp = team_name_update(opp)) # to match other data, wow
 
 # game results
 # name matching is sketchy, so need to fill in some team names

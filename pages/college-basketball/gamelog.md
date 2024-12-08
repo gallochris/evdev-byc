@@ -3,25 +3,30 @@ title: Gamelog
 hide_title: true
 sidebar_position: 3
 queries: 
-  - non_con_games: college-basketball/non_con_games.sql
+  - gamelog: college-basketball/gamelog.sql
 ---
 
-### Gamelog: Non-conference only
+### Gamelog 
+
+Shows games between two D-I teams with point differential, result, date, and quadrant. 
 
 ```sql result_filter
 select 
   result
-from non_con_games
+from gamelog
 ```
 
-Select two conferences to see the list of games to date between teams from each conference. 
+```sql type_filter
+select 
+  type
+from gamelog
+```
 
-
-<Dropdown data={non_con_games} name=conf value=conf defaultValue="%">
+<Dropdown data={gamelog} name=conf value=conf defaultValue="%">
   <DropdownOption value="%" valueLabel="Conference"/>
 </Dropdown>
 
-<Dropdown data={non_con_games} name=opp_conf value=opp_conf defaultValue="%">
+<Dropdown data={gamelog} name=opp_conf value=opp_conf defaultValue="%">
   <DropdownOption value="%" valueLabel="Opp Conference"/>
 </Dropdown>
 
@@ -39,7 +44,13 @@ Select two conferences to see the list of games to date between teams from each 
     <DropdownOption valueLabel = "Q4" value ="Quadrant 4" />
 </Dropdown>
 
-<DataTable data={non_con_games} rows=all search=true rowNumbers=true>
+<Dropdown name=type_filter title="Type" >
+    <DropdownOption valueLabel ="All" value ="%" default/>
+    <DropdownOption valueLabel = "Conference" value ="conf" />
+    <DropdownOption valueLabel = "No-Conference" value ="nc" />
+</Dropdown>
+
+<DataTable data={gamelog} rows=all search=true rowNumbers=true>
   <Column id=team_with_rk title="Team"/>
   <Column id=delta contentType=delta fmt=# title="+/-"/>
   <Column id=opp_with_rk title="Opponent"/>

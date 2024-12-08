@@ -1,61 +1,66 @@
 # -----------------------------
-# Load the utilities 
-# adjusts conference names 
+# Load the utilities
+# adjusts conference names
 source(here::here("data/college-basketball/utils.R"))
 source(here::here("data/college-basketball/base_query.R"))
 
 # -----------------------------
 # load schedule and add net data
-sched_data <- schedule |> 
+sched_data <- schedule |>
   dplyr::mutate(opp_conf = conf_name_lookup(opp_conf)) |>
-  dplyr::mutate(conf = conf_name_lookup(conf)) |> 
-  dplyr::filter(date < today_date) |> 
-  dplyr::mutate(team = team_name_lookup(team)) |> # revert names to get quad
-  dplyr::mutate(opp = team_name_lookup(opp)) |>  # data
-  cbbdata::cbd_add_net_quad() |> # add quad data and net
-  dplyr::mutate(team = team_name_update(team)) |> # now revert back
-  dplyr::mutate(opp = team_name_update(opp)) # to match other data, wow
- 
+  dplyr::mutate(conf = conf_name_lookup(conf)) |>
+  dplyr::filter(date < today_date) 
+
 # Add in torvik ratings
-current_ratings <- ratings |> 
-  dplyr::mutate(conf = conf_name_lookup(conf)) |> 
+current_ratings <- ratings |>
+  dplyr::mutate(conf = conf_name_lookup(conf)) |>
   dplyr::select(team, conf, barthag, barthag_rk)
 
 # Join the ratings with the game results
 games_with_ratings <- sched_data |>
   dplyr::left_join(
-    current_ratings |> 
-      dplyr::select(team, barthag, barthag_rk) |> 
+    current_ratings |>
+      dplyr::select(team, barthag, barthag_rk) |>
       dplyr::rename(team_barthag = barthag, team_rk = barthag_rk),
     by = "team"
   ) |>
   dplyr::left_join(
-    current_ratings |> 
-      dplyr::select(team, barthag, barthag_rk) |> 
+    current_ratings |>
+      dplyr::select(team, barthag, barthag_rk) |>
       dplyr::rename(opp_barthag = barthag, opp_rk = barthag_rk),
     by = c("opp" = "team")
-  ) |> 
-  dplyr::inner_join(
-    results,
-    by = c("game_id", "team", "opp", "type", 
-           "date", "year")
-  ) 
+  ) |>
+  dplyr::inner_join(results, by = c("game_id", "team", "opp", "type", "date", "year"))
 
 # -----------------------------
-# build non-conference data 
-non_con_ratings <- games_with_ratings |> 
-  dplyr::filter(type == "nc") |> 
-  dplyr::mutate(score_sentence = paste0(result, ", ", pts_scored, "-", 
-                                        pts_allowed),
-                team_with_rk = paste0(team_rk, " ", team),
-                opp_with_rk = paste0(opp_rk, " ", opp),
-                tempo = round(tempo, 0),
-                delta = pts_scored - pts_allowed
-  ) |> 
-  dplyr::select(game_id, date, team_with_rk, conf, opp_with_rk,
-                opp_conf, location, result, delta, 
-                score_sentence, tempo, team_rk, opp_rk, net, quad
-                ) |> 
+# build gamelog
+gamelog <- games_with_ratings |>
+  dplyr::mutate(
+    score_sentence = paste0(result, ", ", pts_scored, "-", pts_allowed),
+    team_with_rk = paste0(team_rk, " ", team),
+    opp_with_rk = paste0(opp_rk, " ", opp),
+    tempo = round(tempo, 0),
+    delta = pts_scored - pts_allowed
+  ) |>
+  dplyr::mutate(quad = quad_clean(quad)) |> 
+  dplyr::select(
+    game_id,
+    date,
+    type,
+    team_with_rk,
+    conf,
+    opp_with_rk,
+    opp_conf,
+    location,
+    result,
+    delta,
+    score_sentence,
+    tempo,
+    team_rk,
+    opp_rk,
+    net,
+    quad
+  ) |>
   dplyr::arrange(desc(date))
 
 # Save the table to duckdb
@@ -64,41 +69,61 @@ library(DBI)
 
 con <- dbConnect(duckdb::duckdb(dbdir = "sources/cbb/cbbdata.duckdb"))
 
-table_name <- "non_con_games"
+table_name <- "gamelog"
 
-duckdb::dbWriteTable(con, table_name, non_con_ratings, overwrite = TRUE)
+duckdb::dbWriteTable(con, table_name, gamelog, overwrite = TRUE)
 
 dbDisconnect(con, shutdown = TRUE)
 
 # -----------------------------
-# Create summary table of conference against conference 
+# Create summary table of conference against conference
 
-# Find the head to head conference records 
-hth_recs <- non_con_ratings |> 
+# Find the head to head conference records
+hth_recs <- gamelog |>
+  dplyr::filter(type == "nc") |> 
   dplyr::group_by(conf, opp_conf) |>
   dplyr::summarise(
     games = dplyr::n(),
     wins = sum(result == "W"),
     losses = sum(result == "L"),
     win_pct = wins / (wins + losses),
-    avg_win_rtg = dplyr::if_else(wins == 0, 
-                                 0, mean(opp_rk[result == "W"], 
-                                         na.rm = TRUE)),
-    avg_loss_rtg = dplyr::if_else(losses == 0, 
-                                  0, mean(opp_rk[result == "L"], 
-                                          na.rm = TRUE)),
-    q1_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 1"), 0),
-    q1_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 1"), 0),
-    q2_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 2"), 0),
-    q2_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 2"), 0),
-    q3_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 3"), 0),
-    q3_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 3"), 0),
-    q4_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 4"), 0),
-    q4_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 4"), 0)
-  ) |> 
-  dplyr::select(conf, opp_conf, games, wins, losses, win_pct, avg_win_rtg, 
-                avg_loss_rtg, q1_wins, q1_losses, q2_wins, q2_losses, 
-                q3_wins, q3_losses, q4_wins, q4_losses) 
+    avg_win_rtg = dplyr::if_else(wins == 0, 0, mean(opp_rk[result == "W"], na.rm = TRUE)),
+    avg_loss_rtg = dplyr::if_else(losses == 0, 0, mean(opp_rk[result == "L"], na.rm = TRUE)),
+    q1_wins = dplyr::coalesce(sum(result == "W" &
+                                    quad == "Q1"), 0),
+    q1_losses = dplyr::coalesce(sum(result == "L" &
+                                      quad == "Q1"), 0),
+    q2_wins = dplyr::coalesce(sum(result == "W" &
+                                    quad == "Q2"), 0),
+    q2_losses = dplyr::coalesce(sum(result == "L" &
+                                      quad == "Q2"), 0),
+    q3_wins = dplyr::coalesce(sum(result == "W" &
+                                    quad == "Q3"), 0),
+    q3_losses = dplyr::coalesce(sum(result == "L" &
+                                      quad == "Q3"), 0),
+    q4_wins = dplyr::coalesce(sum(result == "W" &
+                                    quad == "Q4"), 0),
+    q4_losses = dplyr::coalesce(sum(result == "L" &
+                                      quad == "Q4"), 0)
+  ) |>
+  dplyr::select(
+    conf,
+    opp_conf,
+    games,
+    wins,
+    losses,
+    win_pct,
+    avg_win_rtg,
+    avg_loss_rtg,
+    q1_wins,
+    q1_losses,
+    q2_wins,
+    q2_losses,
+    q3_wins,
+    q3_losses,
+    q4_wins,
+    q4_losses
+  )
 
 
 # Save the table to duckdb
@@ -115,29 +140,53 @@ dbDisconnect(con, shutdown = TRUE)
 
 
 # Group by conference and summarize by quads
-quad_summary <- games_with_ratings |> 
-  dplyr::group_by(conf) |> 
+quad_summary <- games_with_ratings |>
+  dplyr::group_by(conf) |>
   dplyr::summarise(
     q1_games = dplyr::coalesce(sum(quad == "Quadrant 1"), 0),
-    q1_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 1"), 0),
-    q1_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 1"), 0),
+    q1_wins = dplyr::coalesce(sum(result == "W" &
+                                    quad == "Quadrant 1"), 0),
+    q1_losses = dplyr::coalesce(sum(result == "L" &
+                                      quad == "Quadrant 1"), 0),
     q1_win_pct = q1_wins / q1_games,
     q2_games = dplyr::coalesce(sum(quad == "Quadrant 2"), 0),
-    q2_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 2"), 0),
-    q2_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 2"), 0),
+    q2_wins = dplyr::coalesce(sum(result == "W" &
+                                    quad == "Quadrant 2"), 0),
+    q2_losses = dplyr::coalesce(sum(result == "L" &
+                                      quad == "Quadrant 2"), 0),
     q2_win_pct = q2_wins / q2_games,
     q3_games = dplyr::coalesce(sum(quad == "Quadrant 3"), 0),
-    q3_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 3"), 0),
-    q3_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 3"), 0),
+    q3_wins = dplyr::coalesce(sum(result == "W" &
+                                    quad == "Quadrant 3"), 0),
+    q3_losses = dplyr::coalesce(sum(result == "L" &
+                                      quad == "Quadrant 3"), 0),
     q3_win_pct = q3_wins / q3_games,
     q4_games = dplyr::coalesce(sum(quad == "Quadrant 4"), 0),
-    q4_wins = dplyr::coalesce(sum(result == "W" & quad == "Quadrant 4"), 0),
-    q4_losses = dplyr::coalesce(sum(result == "L" & quad == "Quadrant 4"), 0),
+    q4_wins = dplyr::coalesce(sum(result == "W" &
+                                    quad == "Quadrant 4"), 0),
+    q4_losses = dplyr::coalesce(sum(result == "L" &
+                                      quad == "Quadrant 4"), 0),
     q4_win_pct = q4_wins / q4_games
-  ) |> 
-  dplyr::select(conf, q1_games, q1_wins, q1_losses, q1_win_pct, q2_games, q2_wins, 
-                q2_losses, q2_win_pct, q3_games, q3_wins, q3_losses, q3_win_pct, 
-                q4_games, q4_wins, q4_losses, q4_win_pct) 
+  ) |>
+  dplyr::select(
+    conf,
+    q1_games,
+    q1_wins,
+    q1_losses,
+    q1_win_pct,
+    q2_games,
+    q2_wins,
+    q2_losses,
+    q2_win_pct,
+    q3_games,
+    q3_wins,
+    q3_losses,
+    q3_win_pct,
+    q4_games,
+    q4_wins,
+    q4_losses,
+    q4_win_pct
+  )
 
 # Save the table to duckdb
 library(duckdb)

@@ -79,3 +79,16 @@ team_name_lookup <- function(team_var) {
     team_var ~ team_var
   )
 }
+
+# quadrant cleaning 
+quad_clean <- function(quad_var) {
+    quad_var = dplyr::case_match(
+      quad_var,
+      "Quadrant 1" ~ "Q1",
+      "Quadrant 2" ~ "Q2",
+      "Quadrant 3" ~ "Q3",
+      "Quadrant 4" ~ "Q4",
+      quad_var ~ quad_var
+    )
+  }
+
