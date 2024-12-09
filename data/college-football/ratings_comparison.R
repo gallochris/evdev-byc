@@ -23,17 +23,26 @@ source(here::here("data/college-football/cfb_ratings.R"))
 # targetCol=tier 
 # valueCol=tier_count />
 
+# playoff teams
+teams_in_playoff <- c("Indiana (11-1)", "Notre Dame (11-1)", 
+                     "SMU (11-2)", "Penn State (11-2)", 
+                     "Clemson (10-3)", "Texas (11-2)",
+                     "Tennessee (10-2)", "Ohio State (10-2)", 
+                     "Boise State (12-1)", "Arizona State (11-2)",
+                     "Oregon (13-0)", "Georgia (11-2)")
+
 ratings_sankey <- cfb_resume |> 
   dplyr::mutate(
-   conf = conf_name_lookup(conf) 
+   conf = conf_name_lookup(conf),
+   playoff_team = dplyr::if_else(team_name %in% teams_in_playoff, "Yes", "No")
   ) |> 
   dplyr::group_by(conf) |> 
   dplyr::summarise(
-    `Top 12` = sum(cfp_rank < 13),
+    `Playoff` = sum(playoff_team == "Yes"),
     `Top 25` = sum(cfp_rank > 12)
   ) |> 
   tidyr::pivot_longer(
-    cols = c(`Top 12`, `Top 25`),
+    cols = c(Playoff, `Top 25`),
     names_to = "Tier",
     values_to = "Total"
   )

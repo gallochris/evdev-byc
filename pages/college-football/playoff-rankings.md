@@ -7,9 +7,9 @@ queries:
 
 ### Playoff Rankings
 
-`Last update: December 3, 2024`
+`Last update: December 9, 2024`
 
-Shows the number of teams by conference ranked in the top 12 (Playoff) and the number of teams ranked in the top 25 (13th to 25th). 
+Shows the number of teams by conference that are in the 12 team playoff. 
 
 <SankeyDiagram
   data={ratings_sankey} 
@@ -27,8 +27,6 @@ Shows the number of teams by conference ranked in the top 12 (Playoff) and the n
 Shows college football rankings and résumé rankings and percentiles from: 
 - [FEI](https://www.bcftoys.com/2024-cfp/): Brian Fremeau's FEI résumé ratings using GWD or a strength of schedule rating that represents the number of losses a team two standard deviations above average would expect to have against the schedule of opponents. 
 - [SOR](https://www.espn.com/college-football/fpi/_/view/resume): Strength of record from ESPN reflects chance that an average Top 25 team would have team's record or better, given the schedule.
-
-Ratings updated typically every Wednesday starting November 6. 
 
 ```sql confs
 select conf from cfp_rankings

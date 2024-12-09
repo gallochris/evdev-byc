@@ -8,7 +8,7 @@ source(here::here("data/college-basketball/base_query.R"))
 hcMultiplier <- 0.014
 
 # Add the efficiency ratingsxq
-barts <- cbbdata::cbd_torvik_ratings(year = "2025") |>
+barts <- ratings |> 
   dplyr::select(team, barthag, adj_o, adj_d) |>
   dplyr::add_row(
     team = "BubTeam",
@@ -35,20 +35,18 @@ barts <- cbbdata::cbd_torvik_ratings(year = "2025") |>
                       values_to = "rtg")
 
 # Now add entire played schedule for DI teams only
-all_team_sched <- schedule |> 
-  dplyr::left_join(
-    results,
-    by = c("game_id", "team")
-  ) |> 
-  dplyr::filter(type != "nond1") |> 
+all_team_sched <- games_with_ratings |> 
   dplyr::select(game_id,
                 date,
+                type,
                 team,
                 opp,
                 conf,
                 opp_conf,
                 location,
                 result,
+                net, 
+                quad,
                 pts_scored,
                 pts_allowed) |>
   dplyr::mutate(opp_location = dplyr::case_match(location, "H" ~ "A", "A" ~ "H", "N" ~ "N")) |>
@@ -100,7 +98,9 @@ sched_with_rtg <- all_team_sched |>
     score = paste0(pts_scored, "-", pts_allowed),
   ) |>
   dplyr::select(
+    game_id,
     date,
+    type,
     team,
     opp,
     conf,
@@ -114,76 +114,21 @@ sched_with_rtg <- all_team_sched |>
     bub_rtg,
     bub_win_prob,
     wab,
-    wab_opp
-  ) |>
-  cbbdata::cbd_add_net_quad()
+    wab_opp,
+    net,
+    quad
+  ) 
 
 # Now add in the future games
-playedGames <- cbbdata::cbd_torvik_team_schedule(year = 2025) |> 
-  dplyr::mutate(opp = team_name_lookup(opp)) |>
-  dplyr::mutate(team = team_name_lookup(team)) |> 
-  dplyr::mutate(conf = dplyr::case_match(team, # fix team naming for leagues
-                                         "Charleston" ~ "Horz",
-                                         "LIU" ~ "NEC",
-                                         "Detroit Mercy" ~ "Horz",
-                                         "Purdue Fort Wayne" ~ "Horz",
-                                         "Louisiana" ~ "SB",
-                                         "N.C. State" ~ "ACC",
-                                         "IU Indy" ~ "Horz",
-                                         "Saint Francis" ~ "NEC",
-                                         .default = conf)
-  ) |> 
-  dplyr::mutate(opp_conf = dplyr::case_match(opp,
-                                             "Charleston" ~ "Horz",
-                                             "LIU" ~ "NEC",
-                                             "Detroit Mercy" ~ "Horz",
-                                             "Purdue Fort Wayne" ~ "Horz",
-                                             "Louisiana" ~ "SB",
-                                             "N.C. State" ~ "ACC",
-                                             "IU Indy" ~ "Horz",
-                                             "Saint Francis" ~ "NEC",
-                                             .default = opp_conf)
-  ) |> 
-  dplyr::mutate(opp_conf = conf_name_lookup(opp_conf)) |>
-  dplyr::mutate(conf = conf_name_lookup(conf)) |> 
-  cbbdata::cbd_add_net_quad() |> 
+playedGames <- sched_with_rtg |> 
   dplyr::distinct(game_id)
 
 
-all_team_future <-
-  cbbdata::cbd_torvik_team_schedule(year = 2025) |> 
-  dplyr::mutate(opp = team_name_lookup(opp)) |>
-  dplyr::mutate(team = team_name_lookup(team)) |> 
-  dplyr::mutate(conf = dplyr::case_match(team, # fix team naming for leagues
-                                         "Charleston" ~ "Horz",
-                                         "LIU" ~ "NEC",
-                                         "Detroit Mercy" ~ "Horz",
-                                         "Purdue Fort Wayne" ~ "Horz",
-                                         "Louisiana" ~ "SB",
-                                         "N.C. State" ~ "ACC",
-                                         "IU Indy" ~ "Horz",
-                                         "Saint Francis" ~ "NEC",
-                                         .default = conf)
-  ) |> 
-  dplyr::mutate(opp_conf = dplyr::case_match(opp,
-                                             "Charleston" ~ "Horz",
-                                             "LIU" ~ "NEC",
-                                             "Detroit Mercy" ~ "Horz",
-                                             "Purdue Fort Wayne" ~ "Horz",
-                                             "Louisiana" ~ "SB",
-                                             "N.C. State" ~ "ACC",
-                                             "IU Indy" ~ "Horz",
-                                             "Saint Francis" ~ "NEC",
-                                             .default = opp_conf)
-  ) |> 
-  dplyr::mutate(opp_conf = conf_name_lookup(opp_conf)) |>
-  dplyr::mutate(conf = conf_name_lookup(conf)) |> 
-  cbbdata::cbd_add_net_quad() |> 
+all_team_future <- cbbdata::cbd_torvik_season_schedule(year = 2025) |> 
   dplyr::filter(!game_id %in% playedGames & type != "nond1") |>
   dplyr::mutate(team = home, opp = away)
 
-all_team_future_visitors <-
-  cbbdata::cbd_torvik_season_schedule(year = "2025") |>
+all_team_future_visitors <- cbbdata::cbd_torvik_season_schedule(year = "2025") |>
   dplyr::filter(!game_id %in% playedGames & type != "nond1") |>
   dplyr::mutate(team = away, opp = home)
 
@@ -207,6 +152,7 @@ future_sched_with_ratings <-
   dplyr::mutate(wabW = (1 - bub_win_prob),
                 wabL = -bub_win_prob,) |>
   dplyr::select(
+    game_id,
     date,
     team,
     opp,
@@ -219,4 +165,33 @@ future_sched_with_ratings <-
     wabW,
     wabL
   ) |>
+  dplyr::mutate(opp = team_name_lookup(opp)) |>
+  dplyr::mutate(team = team_name_lookup(team)) |> 
   cbbdata::cbd_add_net_quad()
+
+# -----------------------------
+# Now combine the current results with the future schedule 
+# idea is to show a teams schedule with wab borken out 
+
+sched_to_join <- sched_with_rtg |> 
+  dplyr::select(game_id, type, team, opp, wab, wab_opp, result, score)
+
+team_sched_by_wab <- future_sched_with_ratings |> 
+  dplyr::left_join(sched_to_join, by = c("game_id",
+                                         "team",
+                                         "opp"),
+                   relationship = "many-to-many")
+
+# Save the table to duckdb
+library(duckdb)
+library(DBI)
+
+con <- dbConnect(duckdb::duckdb(dbdir = "sources/cbb/cbbdata.duckdb"))
+
+table_name <- "wab_team_schedule"
+
+duckdb::dbWriteTable(con, table_name, team_sched_by_wab, overwrite = TRUE)
+
+dbDisconnect(con, shutdown = TRUE)
+
+
