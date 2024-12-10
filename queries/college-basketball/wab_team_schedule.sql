@@ -3,12 +3,14 @@ select
       team,
       opp, 
       location,
-      result,
+      score_sentence,
       score,
-      wab as wabW,
+      result,
+      wab_result,
       quad
   from cbb.wab_team_schedule
-  where team like '${inputs.team.value}'
+  where wab_result is not null
+    and team like '${inputs.team.value}'
     and  (
       '${inputs.result_filter.value}' = '%'
       or 

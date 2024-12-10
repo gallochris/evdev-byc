@@ -42,7 +42,7 @@ ratings_sankey <- cfb_resume |>
     `Top 25` = sum(cfp_rank > 12)
   ) |> 
   tidyr::pivot_longer(
-    cols = c(Playoff, `Top 25`),
+    cols = c(Playoff),
     names_to = "Tier",
     values_to = "Total"
   )

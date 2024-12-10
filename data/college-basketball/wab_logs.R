@@ -8,7 +8,7 @@ source(here::here("data/college-basketball/base_query.R"))
 hcMultiplier <- 0.014
 
 # Add the efficiency ratingsxq
-barts <- ratings |> 
+barts <- ratings |>
   dplyr::select(team, barthag, adj_o, adj_d) |>
   dplyr::add_row(
     team = "BubTeam",
@@ -35,20 +35,22 @@ barts <- ratings |>
                       values_to = "rtg")
 
 # Now add entire played schedule for DI teams only
-all_team_sched <- games_with_ratings |> 
-  dplyr::select(game_id,
-                date,
-                type,
-                team,
-                opp,
-                conf,
-                opp_conf,
-                location,
-                result,
-                net, 
-                quad,
-                pts_scored,
-                pts_allowed) |>
+all_team_sched <- games_with_ratings |>
+  dplyr::select(
+    game_id,
+    date,
+    type,
+    team,
+    opp,
+    conf,
+    opp_conf,
+    location,
+    result,
+    net,
+    quad,
+    pts_scored,
+    pts_allowed
+  ) |>
   dplyr::mutate(opp_location = dplyr::case_match(location, "H" ~ "A", "A" ~ "H", "N" ~ "N")) |>
   dplyr::arrange(date)
 
@@ -117,14 +119,14 @@ sched_with_rtg <- all_team_sched |>
     wab_opp,
     net,
     quad
-  ) 
+  )
 
 # Now add in the future games
-playedGames <- sched_with_rtg |> 
+playedGames <- sched_with_rtg |>
   dplyr::distinct(game_id)
 
 
-all_team_future <- cbbdata::cbd_torvik_season_schedule(year = 2025) |> 
+all_team_future <- cbbdata::cbd_torvik_season_schedule(year = 2025) |>
   dplyr::filter(!game_id %in% playedGames & type != "nond1") |>
   dplyr::mutate(team = home, opp = away)
 
@@ -150,7 +152,8 @@ future_sched_with_ratings <-
   dplyr::mutate(#bub_win_prob = log(bub_rtg / (1 - opp_rtg), base = 5),
     bub_win_prob = (bub_rtg - bub_rtg * opp_rtg) / (bub_rtg + opp_rtg - 2 * bub_rtg * opp_rtg)) |>
   dplyr::mutate(wabW = (1 - bub_win_prob),
-                wabL = -bub_win_prob,) |>
+                wabL = -bub_win_prob,
+  ) |>
   dplyr::select(
     game_id,
     date,
@@ -166,32 +169,53 @@ future_sched_with_ratings <-
     wabL
   ) |>
   dplyr::mutate(opp = team_name_lookup(opp)) |>
-  dplyr::mutate(team = team_name_lookup(team)) |> 
+  dplyr::mutate(team = team_name_lookup(team)) |>
   cbbdata::cbd_add_net_quad()
 
 # -----------------------------
-# Now combine the current results with the future schedule 
-# idea is to show a teams schedule with wab borken out 
+# Now combine the current results with the future schedule
+# idea is to show a teams schedule with wab borken out
 
-sched_to_join <- sched_with_rtg |> 
+sched_to_join <- sched_with_rtg |>
   dplyr::select(game_id, type, team, opp, wab, wab_opp, result, score)
 
-team_sched_by_wab <- future_sched_with_ratings |> 
-  dplyr::left_join(sched_to_join, by = c("game_id",
-                                         "team",
-                                         "opp"),
-                   relationship = "many-to-many")
+# First table is only going to include results or played games
+team_sched_by_wab <- future_sched_with_ratings |>
+  dplyr::left_join(sched_to_join,
+                   by = c("game_id", "team", "opp"),
+                   relationship = "many-to-many") |>
+  dplyr::mutate(
+    quad = quad_clean(quad),
+    wab_result = dplyr::if_else(result == "W", round(wabW, 2), round(wabL, 2)),
+    score_sentence = paste0(result, ", ", score)
+  ) |>
+  dplyr::filter(!is.na(result))
 
-# Save the table to duckdb
+# Second table only includes future games
+team_future_by_wab <- future_sched_with_ratings |>
+  dplyr::left_join(sched_to_join,
+                   by = c("game_id", "team", "opp"),
+                   relationship = "many-to-many") |>
+  dplyr::mutate(
+    quad = quad_clean(quad),
+    wabW = round(wabW, 2),
+    wabL = round(wabL, 2)
+  ) |>
+  dplyr::filter(date > today_date)
+
+# Save the two tables to duckdb
 library(duckdb)
 library(DBI)
 
 con <- dbConnect(duckdb::duckdb(dbdir = "sources/cbb/cbbdata.duckdb"))
 
-table_name <- "wab_team_schedule"
+first_table_name <- "wab_team_schedule"
 
-duckdb::dbWriteTable(con, table_name, team_sched_by_wab, overwrite = TRUE)
+duckdb::dbWriteTable(con, first_table_name, team_sched_by_wab, overwrite = TRUE)
+
+second_table_name <- "wab_team_future"
+
+duckdb::dbWriteTable(con, second_table_name, team_future_by_wab, overwrite = TRUE)
+
 
 dbDisconnect(con, shutdown = TRUE)
-
-

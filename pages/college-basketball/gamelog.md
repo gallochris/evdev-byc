@@ -50,7 +50,7 @@ from gamelog
     <DropdownOption valueLabel = "No-Conference" value ="nc" />
 </Dropdown>
 
-<DataTable data={gamelog} rows=all search=true rowNumbers=true>
+<DataTable data={gamelog} rows=50 search=true rowNumbers=true>
   <Column id=team_with_rk title="Team"/>
   <Column id=delta contentType=delta fmt=# title="+/-"/>
   <Column id=opp_with_rk title="Opponent"/>
