@@ -1,5 +1,5 @@
 ---
-title: WAB
+title: WAB-log
 hide_title: true
 sidebar_position: 4
 active: false
@@ -41,11 +41,35 @@ from wab_team_schedule
 </Dropdown>
 
 ```sql team_wab_count
+with team_wab_stats as (
+  select 
+    team,
+    sum(wab_result) as total_wab_count,
+    concat(
+      cast(sum(case when result = 'W' then 1 else 0 end) as varchar),
+      '-',
+      cast(sum(case when result = 'L' then 1 else 0 end) as varchar)
+    ) as team_record
+  from wab_team_schedule
+  group by team
+),
+ranked_teams as (
+  select 
+    team,
+    total_wab_count,
+    team_record,
+    rank() over (order by total_wab_count desc) as wab_rank,
+    dense_rank() over (order by total_wab_count desc) as wab_dense_rank
+  from team_wab_stats
+)
 select 
-   sum(wab_result) as total_wab_count
-from wab_team_schedule
+  team,
+  total_wab_count,
+  team_record,
+  wab_rank,
+  wab_dense_rank
+from ranked_teams
 where team = '${inputs.team.value}'
-group by team
 ```
 
 {#each team_wab_count as row}
@@ -53,9 +77,24 @@ group by team
 
 <BigValue
   data={row}
+  value=team_record
+  title="W-L"
+  fmt='#'
+/>
+
+
+<BigValue
+  data={row}
   value=total_wab_count
   title="WAB"
   fmt='num2'
+/>
+
+<BigValue
+  data={row}
+  value=wab_dense_rank
+  title="WAB Rank"
+  fmt='#'
 />
 
 {/if}
@@ -72,7 +111,8 @@ group by team
 </DataTable>
 
 </Tab>
-    
+
+
 <Tab label="Scheduled">
         
 <Dropdown data={wab_team_future} name=team value=team defaultValue="%">
@@ -87,6 +127,53 @@ group by team
     <DropdownOption valueLabel = "Q3" value ="Q3" />
     <DropdownOption valueLabel = "Q4" value ="Q4" />
 </Dropdown>
+
+
+
+```sql team_wab_future
+with team_wab_future_stats as (
+  select 
+    team,
+    sum(wabW) as total_wab_future
+  from wab_team_future
+  group by team
+),
+ranked_teams as (
+  select 
+    team,
+    total_wab_future,
+    rank() over (order by total_wab_future desc) as wab_future_rank,
+    dense_rank() over (order by total_wab_future desc) as wab_future_dense_rank
+  from team_wab_future_stats
+)
+select 
+  team,
+  total_wab_future,
+  wab_future_rank,
+  wab_future_dense_rank
+from ranked_teams
+where team = '${inputs.team.value}'
+```
+
+{#each team_wab_future as row}
+{#if inputs.team.value != "%"}
+
+<BigValue
+  data={row}
+  value=total_wab_future
+  title="WAB Opportunity"
+  fmt='num2'
+/>
+
+<BigValue
+  data={row}
+  value=wab_future_dense_rank
+  title="WAB Opportunity Rank"
+  fmt='#'
+/>
+
+{/if}
+{/each}
 
 <DataTable data={wab_team_future} rows=50 search=true rowNumbers=true>
   <Column id=date fmt=m/d/y title="Date"/>

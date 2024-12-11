@@ -38,10 +38,10 @@ from gamelog
 
 <Dropdown name=quad_filter title="Quadrant" >
     <DropdownOption valueLabel ="All" value ="%" default/>
-    <DropdownOption valueLabel = "Q1" value ="Quadrant 1" />
-    <DropdownOption valueLabel = "Q2" value ="Quadrant 2" />
-    <DropdownOption valueLabel = "Q3" value ="Quadrant 3" />
-    <DropdownOption valueLabel = "Q4" value ="Quadrant 4" />
+    <DropdownOption valueLabel = "Q1" value ="Q1" />
+    <DropdownOption valueLabel = "Q2" value ="Q2" />
+    <DropdownOption valueLabel = "Q3" value ="Q3" />
+    <DropdownOption valueLabel = "Q4" value ="Q4" />
 </Dropdown>
 
 <Dropdown name=type_filter title="Type" >
