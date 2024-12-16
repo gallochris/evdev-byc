@@ -4,8 +4,7 @@
 source(here::here("data/college-basketball/utils.R"))
 source(here::here("data/college-basketball/base_query.R"))
 
-# load in games with ratings
-# this needs to be cleaned up
+# ----------------------------- Load in game ratings
 conf_data <- games_with_ratings
 
 # Determine the margin for conference only games
@@ -25,19 +24,10 @@ conf_margin <- games_with_ratings |>
   ) |>
   dplyr::arrange(-wins, -delta)
 
-# Save the table to duckdb
-library(duckdb)
-library(DBI)
+# ----------------------------- Write to duckdb
+write_to_duckdb(conf_margin, "conf_standings")
 
-con <- dbConnect(duckdb::duckdb(dbdir = "sources/cbb/cbbdata.duckdb"))
-
-table_name <- "conf_standings"
-
-duckdb::dbWriteTable(con, table_name, conf_margin, overwrite = TRUE)
-
-dbDisconnect(con, shutdown = TRUE)
-
-# Create summary table,
+# ----------------------------- Create summary table
 conf_summary <- conf_margin |>
   dplyr::group_by(conf) |>
   dplyr::summarise(
@@ -52,11 +42,5 @@ conf_summary <- conf_margin |>
   dplyr::arrange(desc(home_win_pct)) |>
   dplyr::distinct(conf, .keep_all = TRUE)
 
-# Save table
-con <- dbConnect(duckdb::duckdb(dbdir = "sources/cbb/cbbdata.duckdb"))
-
-table_name <- "conf_summary"
-
-duckdb::dbWriteTable(con, table_name, conf_summary, overwrite = TRUE)
-
-dbDisconnect(con, shutdown = TRUE)
+# ----------------------------- Write to duckdb
+write_to_duckdb(conf_summary, "conf_summary")

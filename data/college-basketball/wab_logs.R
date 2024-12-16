@@ -189,7 +189,8 @@ team_sched_by_wab <- future_sched_with_ratings |>
     wab_result = dplyr::if_else(result == "W", round(wabW, 2), round(wabL, 2)),
     score_sentence = paste0(result, ", ", score)
   ) |>
-  dplyr::filter(!is.na(result))
+  dplyr::filter(!is.na(result)) |> 
+  dplyr::arrange(desc(date))
 
 # Second table only includes future games
 team_future_by_wab <- future_sched_with_ratings |>
@@ -203,19 +204,9 @@ team_future_by_wab <- future_sched_with_ratings |>
   ) |>
   dplyr::filter(date > today_date)
 
-# Save the two tables to duckdb
-library(duckdb)
-library(DBI)
 
-con <- dbConnect(duckdb::duckdb(dbdir = "sources/cbb/cbbdata.duckdb"))
+# ----------------------------- Write to duckdb
+write_to_duckdb(team_sched_by_wab, "wab_team_schedule")
 
-first_table_name <- "wab_team_schedule"
+write_to_duckdb(team_future_by_wab, "wab_team_future")
 
-duckdb::dbWriteTable(con, first_table_name, team_sched_by_wab, overwrite = TRUE)
-
-second_table_name <- "wab_team_future"
-
-duckdb::dbWriteTable(con, second_table_name, team_future_by_wab, overwrite = TRUE)
-
-
-dbDisconnect(con, shutdown = TRUE)

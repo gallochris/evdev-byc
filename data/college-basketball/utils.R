@@ -1,4 +1,4 @@
-# clean conference names - this should be a utility file probably
+# # ----------------------------- Clean conference names
 conf_name_lookup <- function(conf_var) {
   conf_var = dplyr::case_match(
     conf_var,
@@ -30,10 +30,8 @@ conf_name_lookup <- function(conf_var) {
   )
 }
 
-# today's date
-today_date <- format(Sys.Date(), "%Y-%m-%d")
 
-
+# ----------------------------- Update team names
 team_name_update <- function(team_var) {
   team_var = dplyr::case_match(
     team_var,
@@ -49,6 +47,7 @@ team_name_update <- function(team_var) {
   )
 }
 
+# ----------------------------- Match conferences to those team names
 conf_name_update <- function(team_var) {
   dplyr::case_match(
     team_var,
@@ -64,7 +63,7 @@ conf_name_update <- function(team_var) {
   )
 }
 
-# reverse this name lookup to add quad data
+# ----------------------------- Reverse team name lookup
 team_name_lookup <- function(team_var) {
   team_var = dplyr::case_match(
     team_var,
@@ -80,7 +79,7 @@ team_name_lookup <- function(team_var) {
   )
 }
 
-# quadrant cleaning 
+# ----------------------------- Clean quadrant names
 quad_clean <- function(quad_var) {
     quad_var = dplyr::case_match(
       quad_var,
@@ -91,4 +90,17 @@ quad_clean <- function(quad_var) {
       quad_var ~ quad_var
     )
   }
+
+# ----------------------------- Write to duckdb 
+write_to_duckdb <- function(data, table_name, 
+                            db_path = "sources/cbb/cbbdata.duckdb") 
+  {
+  con <- dbConnect(duckdb::duckdb(dbdir = db_path))
+  tryCatch({
+    duckdb::dbWriteTable(con, table_name, data, overwrite = TRUE)
+  }, finally = {
+    dbDisconnect(con, shutdown = TRUE)
+  })
+}
+
 

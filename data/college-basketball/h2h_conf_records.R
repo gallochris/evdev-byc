@@ -4,36 +4,7 @@
 source(here::here("data/college-basketball/utils.R"))
 source(here::here("data/college-basketball/base_query.R"))
 
-# -----------------------------
-# load schedule and add net data
-sched_data <- schedule |>
-  dplyr::mutate(opp_conf = conf_name_lookup(opp_conf)) |>
-  dplyr::mutate(conf = conf_name_lookup(conf)) |>
-  dplyr::filter(date < today_date) 
-
-# Add in torvik ratings
-current_ratings <- ratings |>
-  dplyr::mutate(conf = conf_name_lookup(conf)) |>
-  dplyr::select(team, conf, barthag, barthag_rk)
-
-# Join the ratings with the game results
-games_with_ratings <- sched_data |>
-  dplyr::left_join(
-    current_ratings |>
-      dplyr::select(team, barthag, barthag_rk) |>
-      dplyr::rename(team_barthag = barthag, team_rk = barthag_rk),
-    by = "team"
-  ) |>
-  dplyr::left_join(
-    current_ratings |>
-      dplyr::select(team, barthag, barthag_rk) |>
-      dplyr::rename(opp_barthag = barthag, opp_rk = barthag_rk),
-    by = c("opp" = "team")
-  ) |>
-  dplyr::inner_join(results, by = c("game_id", "team", "opp", "type", "date", "year"))
-
-# -----------------------------
-# build gamelog
+# ----------------------------- Build gamelog
 gamelog <- games_with_ratings |>
   dplyr::mutate(
     score_sentence = paste0(result, ", ", pts_scored, "-", pts_allowed),
@@ -63,22 +34,11 @@ gamelog <- games_with_ratings |>
   ) |>
   dplyr::arrange(desc(date))
 
-# Save the table to duckdb
-library(duckdb)
-library(DBI)
 
-con <- dbConnect(duckdb::duckdb(dbdir = "sources/cbb/cbbdata.duckdb"))
+# ----------------------------- Write to duckdb
+write_to_duckdb(gamelog, "gamelog")
 
-table_name <- "gamelog"
-
-duckdb::dbWriteTable(con, table_name, gamelog, overwrite = TRUE)
-
-dbDisconnect(con, shutdown = TRUE)
-
-# -----------------------------
-# Create summary table of conference against conference
-
-# Find the head to head conference records
+# ----------------------------- Summary table of conference against conference
 hth_recs <- gamelog |>
   dplyr::filter(type == "nc") |> 
   dplyr::group_by(conf, opp_conf) |>
@@ -125,21 +85,11 @@ hth_recs <- gamelog |>
     q4_losses
   )
 
-
-# Save the table to duckdb
-library(duckdb)
-library(DBI)
-
-con <- dbConnect(duckdb::duckdb(dbdir = "sources/cbb/cbbdata.duckdb"))
-
-table_name <- "hth_recs"
-
-duckdb::dbWriteTable(con, table_name, hth_recs, overwrite = TRUE)
-
-dbDisconnect(con, shutdown = TRUE)
+# ----------------------------- Write to duckdb
+write_to_duckdb(hth_recs, "hth_recs")
 
 
-# Group by conference and summarize by quads
+# # ----------------------------- Summarize by quads
 quad_summary <- games_with_ratings |>
   dplyr::group_by(conf) |>
   dplyr::summarise(
@@ -188,14 +138,5 @@ quad_summary <- games_with_ratings |>
     q4_win_pct
   )
 
-# Save the table to duckdb
-library(duckdb)
-library(DBI)
-
-con <- dbConnect(duckdb::duckdb(dbdir = "sources/cbb/cbbdata.duckdb"))
-
-table_name <- "quad_summary"
-
-duckdb::dbWriteTable(con, table_name, quad_summary, overwrite = TRUE)
-
-dbDisconnect(con, shutdown = TRUE)
+# ----------------------------- Write to duckdb
+write_to_duckdb(quad_summary, "quad_summary")
