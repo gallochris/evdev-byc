@@ -99,7 +99,7 @@ write_to_duckdb <- function(data, table_name,
   tryCatch({
     duckdb::dbWriteTable(con, table_name, data, overwrite = TRUE)
   }, finally = {
-    dbDisconnect(con, shutdown = TRUE)
+    DBI::dbDisconnect(con, shutdown = TRUE)
   })
 }
 
