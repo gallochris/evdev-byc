@@ -13,8 +13,10 @@ schedule <- cbbdata::cbd_torvik_team_schedule(year = 2025) |>
   dplyr::mutate(team = team_name_update(team)) |> # now revert back
   dplyr::mutate(opp = team_name_update(opp)) # to match other data, wow
 
-# ----------------------------- Today's date
+# ----------------------------- Dates
 today_date <- format(Sys.Date(), "%Y-%m-%d")
+
+yesterday_date <- format(Sys.Date() - lubridate::days(1), "%Y-%m-%d")
 
 sched_data <- schedule |>
   dplyr::mutate(opp_conf = conf_name_lookup(opp_conf)) |>

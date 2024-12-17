@@ -4,7 +4,7 @@
 source(here::here("data/college-basketball/utils.R"))
 source(here::here("data/college-basketball/base_query.R"))
 
-# home court multi
+# home court 
 hcMultiplier <- 0.014
 
 # Add the efficiency ratingsxq
@@ -12,12 +12,12 @@ barts <- ratings |>
   dplyr::select(team, barthag, adj_o, adj_d) |>
   dplyr::add_row(
     team = "BubTeam",
-    # define the bubble team
-    barthag = .855,
-    # should consider updating
-    adj_o = 116.1,
-    # and tuning this over time
-    adj_d = 100.1
+    # define the bubble team - tune this over time
+    barthag = .865,
+    # this number goes down, wab should go up
+    adj_o = 115.973,
+    # this number goes up, wab should go up
+    adj_d = 100.49
   ) |>
   dplyr::mutate(
     oHome = adj_o * (1 + hcMultiplier),
@@ -159,6 +159,7 @@ future_sched_with_ratings <-
     date,
     team,
     opp,
+    type,
     location,
     opp_location,
     team_rtg,
@@ -182,7 +183,7 @@ sched_to_join <- sched_with_rtg |>
 # First table is only going to include results or played games
 team_sched_by_wab <- future_sched_with_ratings |>
   dplyr::left_join(sched_to_join,
-                   by = c("game_id", "team", "opp"),
+                   by = c("game_id", "team", "opp", "type"),
                    relationship = "many-to-many") |>
   dplyr::mutate(
     quad = quad_clean(quad),
@@ -195,14 +196,15 @@ team_sched_by_wab <- future_sched_with_ratings |>
 # Second table only includes future games
 team_future_by_wab <- future_sched_with_ratings |>
   dplyr::left_join(sched_to_join,
-                   by = c("game_id", "team", "opp"),
+                   by = c("game_id", "team", "opp", "type"),
                    relationship = "many-to-many") |>
   dplyr::mutate(
     quad = quad_clean(quad),
     wabW = round(wabW, 2),
     wabL = round(wabL, 2)
   ) |>
-  dplyr::filter(date > today_date)
+  dplyr::filter(date > yesterday_date) |> 
+  dplyr::select(-wab, -wab_opp, -result, score)
 
 
 # ----------------------------- Write to duckdb
