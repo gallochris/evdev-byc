@@ -95,7 +95,7 @@ quad_clean <- function(quad_var) {
 write_to_duckdb <- function(data, table_name, 
                             db_path = "sources/cbb/cbbdata.duckdb") 
   {
-  con <- dbConnect(duckdb::duckdb(dbdir = db_path))
+  con <- DBI::dbConnect(duckdb::duckdb(dbdir = db_path))
   tryCatch({
     duckdb::dbWriteTable(con, table_name, data, overwrite = TRUE)
   }, finally = {
