@@ -27,6 +27,9 @@ jobs:
           remotes::install_github("andreweatherman/cbbdata")
         shell: Rscript {0}
     
+      - name: Create directory for DuckDB
+        run: mkdir -p sources/cbb
+  
       - name: Run R Scripts
         run: |
           cd data/college-basketball
