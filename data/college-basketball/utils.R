@@ -93,8 +93,13 @@ quad_clean <- function(quad_var) {
 
 # ----------------------------- Write to duckdb 
 write_to_duckdb <- function(data, table_name, 
-                            db_path = "sources/cbb/cbbdata.duckdb") 
-  {
+                            db_path = file.path(here::here(), "sources", 
+                                                "cbb", "cbbdata.duckdb")) 
+{
+  # Ensure the directory exists
+  dir.create(dirname(db_path), recursive = TRUE, showWarnings = FALSE)
+  
+  # Use tryCatch for more robust error handling
   con <- DBI::dbConnect(duckdb::duckdb(dbdir = db_path))
   tryCatch({
     duckdb::dbWriteTable(con, table_name, data, overwrite = TRUE)
@@ -102,5 +107,4 @@ write_to_duckdb <- function(data, table_name,
     DBI::dbDisconnect(con, shutdown = TRUE)
   })
 }
-
 
