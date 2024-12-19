@@ -3,7 +3,7 @@ name: Daily College Basketball Data Update
 on:
   schedule:
     # Runs at 5:00 AM EST (10:00 UTC)
-    cron: '0 10 * * *'
+    - cron: '0 10 * * *'
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
