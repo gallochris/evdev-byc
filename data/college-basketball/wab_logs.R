@@ -171,7 +171,8 @@ future_sched_with_ratings <-
   ) |>
   dplyr::mutate(opp = team_name_lookup(opp)) |>
   dplyr::mutate(team = team_name_lookup(team)) |>
-  cbbdata::cbd_add_net_quad()
+  cbbdata::cbd_add_net_quad() |> 
+  dplyr::filter(date > yesterday_date) 
 
 # -----------------------------
 # Now combine the current results with the future schedule
@@ -203,8 +204,7 @@ team_future_by_wab <- future_sched_with_ratings |>
     wabW = round(wabW, 2),
     wabL = round(wabL, 2)
   ) |>
-  dplyr::filter(date > yesterday_date) |> 
-  dplyr::select(-wab, -wab_opp, -result, score)
+  dplyr::select(-wab, -wab_opp, -result, -score)
 
 
 # ----------------------------- Write to duckdb
