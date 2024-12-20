@@ -100,7 +100,7 @@ where team = '${inputs.team.value}'
 {/if}
 {/each}
 
-<DataTable data={wab_team_schedule} rows=50 search=true rowNumbers=true>
+<DataTable data={wab_team_schedule} rows=10 search=true rowNumbers=true>
   <Column id=team title="Team"/>
   <Column id=wab_result contentType=delta fmt=num2 title="WAB +/-"/>
   <Column id=opp title="Opponent"/>
@@ -115,7 +115,7 @@ where team = '${inputs.team.value}'
 
 <Tab label="Scheduled">
         
-<Dropdown data={wab_team_future} name=team value=team defaultValue="%">
+<Dropdown data={wab_team_future} name=team value=team defaultValue="North Carolina">
   <DropdownOption value="%" valueLabel="Team"/>
 </Dropdown>
 
@@ -175,7 +175,7 @@ where team = '${inputs.team.value}'
 {/if}
 {/each}
 
-<DataTable data={wab_team_future} rows=50 search=true rowNumbers=true>
+<DataTable data={wab_team_future} rows=10 search=true rowNumbers=true>
   <Column id=date fmt=m/d/y title="Date"/>
   <Column id=team title="Team"/>
   <Column id=opp title="Opponent"/>

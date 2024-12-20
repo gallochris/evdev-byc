@@ -80,7 +80,7 @@ Shows overall records, win percentage, and average opponent rating by result bet
   <DropdownOption value="%" valueLabel="Opponent Conference"/>
 </Dropdown>
 
-<DataTable data={hth_records} rows=all groupBy=conf groupType=section subtotals=true totalRow=true groupNamePosition=top>
+<DataTable data={hth_records} rows=10 groupBy=conf groupType=accordion groupsOpen=false accordionRowColor=#fff0cc subtotals=true  totalRow=true groupNamePosition=top>
   <Column id=opp_conf wrapTitle=true title="Conference"/>
   <Column id=conf title="League"/>
   <Column id=wins title="W"/>
