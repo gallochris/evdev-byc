@@ -171,8 +171,7 @@ future_sched_with_ratings <-
   ) |>
   dplyr::mutate(opp = team_name_lookup(opp)) |>
   dplyr::mutate(team = team_name_lookup(team)) |>
-  cbbdata::cbd_add_net_quad() |> 
-  dplyr::filter(date > yesterday_date) 
+  cbbdata::cbd_add_net_quad()
 
 # -----------------------------
 # Now combine the current results with the future schedule
