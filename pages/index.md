@@ -14,16 +14,21 @@ As you visualize data, the same thing can apply. One person might draw completel
 
 ### What can you find here? 
 
-The current focus is the 2024 college football season. 
+The current focus is the 2024-25 college basketball season. 
 
 Data includes: 
+- head-to-head conference results
+- gamelog of all DI games
+- conference standings and point differentials 
+- log of WAB (wins-above-baseline) for individual teams 
+
+In January, I plan to sunset a lot of the college football data for the 2024 season.
+
+Previous data includes: 
 - team ratings from FPI and F+ 
 - conference standings and point differentials 
 - point spreads and totals 
-
-As of November 22, I'm starting to add 2024-25 college basketball data. This includes:
-- non-conference results 
-- head-to-head conference records
+- playoff rankings
 
 ### Data sources
 

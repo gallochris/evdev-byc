@@ -1,11 +1,9 @@
 # 2024-25 College basketball season
 
-Last updated `November 22`
+## About
 
-This is an experiment right now, and updates are not yet automated. 
-
-The goal is to start surfacing college basketball data, as of now: 
-- non-conference results
+You will find the following data for the 2024-25 college basketball season: 
 - head-to-head conference results
-
-Stay tuned for more data to come. 
+- gamelog of all DI games
+- conference standings and point differentials 
+- log of WAB (wins-above-baseline) for individual teams 

@@ -1,7 +1,7 @@
-# Bless your chart Evidence project
+# Evidence project for Bless your chart
 
 
-## Get Started using the CLI
+## Using the CLI
 
 ```bash
 cd evdev-byc
@@ -19,6 +19,8 @@ npm run dev
 
 ### Data sources
 
-Data sources include [cfbfastR](https://cfbfastr.sportsdataverse.org/index.html), [bcftoys.com](https://www.bcftoys.com/), and [ESPN.com](https://www.espn.com/). 
+Data sources include [cfbfastR](https://cfbfastr.sportsdataverse.org/index.html), [bcftoys.com](https://www.bcftoys.com/), and [ESPN.com](https://www.espn.com/), [cbbdata](https://github.com/andreweatherman/cbbdata/tree/main) + [barttorvik.com](https://barttorvik.com/#), and [hoopR](https://hoopr.sportsdataverse.org/).
 
 The data is cleaned and transformed using the R programming language. This site is built using [evidence.dev](https://evidence.dev/) and [duckdb](https://duckdb.org/). 
+
+College basketball data is currently being updated using a Git action. 
