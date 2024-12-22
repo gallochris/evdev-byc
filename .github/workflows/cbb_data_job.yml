@@ -37,10 +37,9 @@ jobs:
       - name: Run R Scripts
         run: |
           cd data/college-basketball
-          Rscript base_query.R
-          Rscript conf_standings.R
-          Rscript h2h_conf_records.R
           Rscript wab_logs.R
+          Rscript h2h_conf_records.R
+          Rscript conf_standings.R
       
     # Optional: Commit and push changes if your scripts modify files
       - name: Commit results
