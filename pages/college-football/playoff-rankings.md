@@ -1,5 +1,6 @@
 ---
 sidebar_position: 0
+sidebar_link: false
 queries:
   - cfp_rankings: college-football/cfp_rankings.sql
   - ratings_sankey: college-football/ratings_comparison.sql
