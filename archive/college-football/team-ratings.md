@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+sidebar_link: false
 queries:
   - team_ratings: college-football/team_ratings.sql
   - ratings_comparison: college-football/ratings_comparison.sql

@@ -1,5 +1,6 @@
 ---
 sidebar_position: 2
+sidebar_link: false
 queries:
   - conference_standings: college-football/conference_standings.sql
   - non_con_results: college-football/non_con_results.sql
