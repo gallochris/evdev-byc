@@ -21,7 +21,6 @@ from wab_team_schedule
 <Tabs id="played-games">
     <Tab label="Played">
     
-
 <Dropdown data={wab_team_schedule} name=team value=team defaultValue="%">
   <DropdownOption value="%" valueLabel="Team"/>
 </Dropdown>
@@ -134,8 +133,14 @@ where team = '${inputs.team.value}'
 with team_wab_future_stats as (
   select 
     team,
-    sum(wabW) as total_wab_future
-  from wab_team_future
+    round(sum(wabW), 2) as total_wab_future
+  from cbb.wab_team_future
+  where date > CURRENT_DATE - 1
+    and (
+      '${inputs.quad_filter.value}' = '%' 
+      or 
+      quad = '${inputs.quad_filter.value}'
+    )
   group by team
 ),
 ranked_teams as (
@@ -146,12 +151,7 @@ ranked_teams as (
     dense_rank() over (order by total_wab_future desc) as wab_future_dense_rank
   from team_wab_future_stats
 )
-select 
-  team,
-  total_wab_future,
-  wab_future_rank,
-  wab_future_dense_rank
-from ranked_teams
+select * from ranked_teams
 where team = '${inputs.team.value}'
 ```
 
