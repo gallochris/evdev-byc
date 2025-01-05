@@ -28,16 +28,18 @@ conf_margin <- games_with_ratings |>
 write_to_duckdb(conf_margin, "conf_standings")
 
 # ----------------------------- Create summary table
-conf_summary <- conf_margin |>
+conf_summary <- games_with_ratings |>
+  dplyr::filter(type == "conf") |>
   dplyr::group_by(conf) |>
   dplyr::summarise(
     teams = dplyr::n_distinct(team),
-    total_games = sum(wins + loss),
-    avg_point_diff = mean(abs(delta)),
-    home_wins = sum(home_wins),
-    home_win_pct = home_wins / (total_games / 2),
-    close_games_pct = sum(abs(delta) <= 5.5) / total_games,
-    blowout_games_pct = sum(abs(delta) >= 14.5) / total_games
+    total_games = dplyr::n(), 
+    avg_point_diff = mean(abs(pts - opp_pts)),
+    home_wins = sum(location == "H" & result == "W"),
+    home_games = sum(location == "H"),
+    home_win_pct = sum(location == "H" & result == "W") / sum(location == "H"),
+    close_games_pct = sum(abs(pts - opp_pts) <= 5.5)/2 / (total_games/2), # Divide by 2 since 
+    blowout_games_pct = sum(abs(pts - opp_pts) >= 15.5)/2 / (total_games/2) # each game appears twice
   ) |>
   dplyr::arrange(desc(home_win_pct)) |>
   dplyr::distinct(conf, .keep_all = TRUE)
