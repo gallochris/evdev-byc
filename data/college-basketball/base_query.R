@@ -55,3 +55,42 @@ games_with_ratings <- sched_data |>
     by = c("opp" = "team")
   ) |>
   dplyr::inner_join(results, by = c("game_id", "team", "opp", "type", "date", "year"))
+
+
+# Write a csv of clean games to use for random scripts 
+
+# Get today's date
+date_for_file <- Sys.Date()
+
+
+logs_for_csv <- games_with_ratings |> 
+  dplyr::select(
+    date,
+    type,
+    team,
+    opp,
+    location,
+    conf,
+    opp_conf,
+    pts, 
+    opp_pts,
+    fga,
+    oreb,
+    to,
+    fta,
+    opp_fga,
+    opp_oreb,
+    opp_to,
+    opp_fta,
+    off_ppp,
+    def_ppp,
+    adj_o,
+    adj_d,
+    tempo,
+    avg_marg,
+    net, 
+    quad,
+  )
+
+# Write the CSV
+write.csv(logs_for_csv, "cbb_daily_gamelog.csv") 
