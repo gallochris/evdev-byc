@@ -34,6 +34,11 @@ jobs:
         run: |
           mkdir -p ${{ github.workspace }}/sources/cbb
   
+      - name: Create Data Directories
+        run: |
+          mkdir -p ${{ github.workspace }}/data
+          mkdir -p ${{ github.workspace }}/sources/cbb
+  
       - name: Run R Scripts
         run: |
           cd data/college-basketball

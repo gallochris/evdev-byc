@@ -61,4 +61,4 @@ games_with_ratings <- sched_data |>
 logs_for_csv <- games_with_ratings 
 
 # Write the CSV
-write.csv(logs_for_csv, "data/cbb_daily_gamelog.csv") 
+write.csv(logs_for_csv, here::here("data/cbb_daily_gamelog.csv"))
