@@ -21,19 +21,11 @@ Data includes:
 - head-to-head conference results
 - gamelog of all DI games
 - conference standings and point differentials
-- log of WAB (wins-above-baseline) for individual teams
-
-In January, I plan to sunset a lot of the college football data for the 2024 season.
-
-Previous data includes:
-
-- team ratings from FPI and F+
-- conference standings and point differentials
-- point spreads and totals
-- playoff rankings
+- log of WAB (wins-above-baseline) for individual games
+- team percentiles across various rankings
 
 ### Data sources
 
-Data sources include [cfbfastR](https://cfbfastr.sportsdataverse.org/index.html), [bcftoys.com](https://www.bcftoys.com/), and [ESPN.com](https://www.espn.com/), [cbbdata](https://github.com/andreweatherman/cbbdata/tree/main) + [barttorvik.com](https://barttorvik.com/#), and [hoopR](https://hoopr.sportsdataverse.org/).
+Data sources include [cfbfastR](https://cfbfastr.sportsdataverse.org/index.html), [bcftoys.com](https://www.bcftoys.com/), [ESPN.com](https://www.espn.com/), [cbbdata](https://github.com/andreweatherman/cbbdata/tree/main) + [barttorvik.com](https://barttorvik.com/#), and [hoopR](https://hoopr.sportsdataverse.org/).
 
 The data is cleaned and transformed using the R programming language. This site is built using [evidence.dev](https://evidence.dev/) and [duckdb](https://duckdb.org/).
