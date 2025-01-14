@@ -45,6 +45,8 @@ jobs:
           Rscript wab_logs.R
           Rscript h2h_conf_records.R
           Rscript conf_standings.R
+          Rscript team_sum_tbl.R
+          Rscript net_archive.R
       
     # Optional: Commit and push changes if your scripts modify files
       - name: Commit results

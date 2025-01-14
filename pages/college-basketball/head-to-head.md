@@ -1,7 +1,7 @@
 ---
 title: H2H Conferences
 hide_title: true
-sidebar_position: 1
+sidebar_position: 5
 queries: 
   - hth_records: college-basketball/hth_records.sql
 ---

@@ -49,9 +49,16 @@ bart_table <- webpage |>
 # pluck game scores for all gamelogs with ratings 
 game_scores_with_conf <- games_with_ratings |> 
   dplyr::group_by(team, conf) |> 
+  dplyr::mutate(
+    avg_gs = mean(game_score) 
+  ) |> 
+  dplyr::arrange(team, desc(date)) |> 
+  dplyr::slice_head(n = 5) |> 
   dplyr::summarise(
-    avg_gs = mean(game_score)
-  )
+    last_five_avg = mean(game_score),
+    season_avg = first(avg_gs) 
+  ) |> 
+  dplyr::select(team, conf, last_five_avg, season_avg)
 
 # series data for the sparkline table 
 game_scores_series <- games_with_ratings |> 
@@ -62,8 +69,9 @@ game_scores_series <- games_with_ratings |>
 # join table
 team_sum_tbl <- bart_table |> 
   dplyr::left_join(game_scores_with_conf, by = "team") |> 
-  dplyr::select(team, record, conf, trk_percentile, kp_percentile, 
-                net_percentile, wab_percentile, avg_gs)
+  dplyr::select(team, record, conf, trk, kp, net, wab,
+                trk_percentile, kp_percentile, 
+                net_percentile, wab_percentile, season_avg, last_five_avg)
 
 # ----------------------------- Write to duckdb
 write_to_duckdb(team_sum_tbl, "team_sum_tbl")

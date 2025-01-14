@@ -1,7 +1,7 @@
 ---
 title: Quad Summary
 hide_title: true
-sidebar_position: 2
+sidebar_position: 6
 queries: 
   - quad_summary: college-basketball/quad_summary.sql
 ---
