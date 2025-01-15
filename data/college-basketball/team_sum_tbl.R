@@ -56,7 +56,7 @@ game_scores_with_conf <- games_with_ratings |>
   dplyr::slice_head(n = 5) |> 
   dplyr::summarise(
     last_five_avg = mean(game_score),
-    season_avg = first(avg_gs) 
+    season_avg = dplyr::first(avg_gs) 
   ) |> 
   dplyr::select(team, conf, last_five_avg, season_avg)
 
