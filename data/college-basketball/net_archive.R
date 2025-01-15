@@ -89,7 +89,7 @@ net_ranks <- function(base_url, id) {
 base_url <- "https://stats.ncaa.org/selection_rankings/nitty_gritties/"
 
 # go through the array of numeric strings and fetch data
-all_net_data <- purrr::map_dfr(arrays, ~ net_ranks(base_url, .x)) |> 
+all_net_data <- purrr::map_dfr(numeric_strings, ~ net_ranks(base_url, .x)) |> 
   dplyr::mutate(team = ncaa_team_name_match(team),  # fix team names
                 conf = ncaa_conf_name_match(conf)
   )
