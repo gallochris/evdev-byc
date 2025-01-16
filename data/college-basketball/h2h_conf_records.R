@@ -18,6 +18,7 @@ gamelog <- games_with_ratings |>
     game_id,
     date,
     type,
+    team,
     team_with_rk,
     conf,
     opp_with_rk,
@@ -30,7 +31,8 @@ gamelog <- games_with_ratings |>
     team_rk,
     opp_rk,
     net,
-    quad
+    quad,
+    game_score
   ) |>
   dplyr::arrange(desc(date))
 

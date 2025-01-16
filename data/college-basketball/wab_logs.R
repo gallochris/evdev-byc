@@ -49,7 +49,8 @@ all_team_sched <- games_with_ratings |>
     net,
     quad,
     pts_scored,
-    pts_allowed
+    pts_allowed,
+    game_score
   ) |>
   dplyr::mutate(opp_location = dplyr::case_match(location, "H" ~ "A", "A" ~ "H", "N" ~ "N")) |>
   dplyr::arrange(date)
@@ -118,7 +119,8 @@ sched_with_rtg <- all_team_sched |>
     wab,
     wab_opp,
     net,
-    quad
+    quad,
+    game_score
   )
 
 # Now add in the future games
@@ -169,16 +171,16 @@ future_sched_with_ratings <-
     wabW,
     wabL
   ) |>
-  dplyr::mutate(opp = team_name_lookup(opp)) |>
-  dplyr::mutate(team = team_name_lookup(team)) |>
-  cbbdata::cbd_add_net_quad()
+  cbbdata::cbd_add_net_quad() |> 
+  dplyr::mutate(team = team_name_update(team)) |> # now revert back
+  dplyr::mutate(opp = team_name_update(opp)) # to match other data, wow
 
 # -----------------------------
 # Now combine the current results with the future schedule
 # idea is to show a teams schedule with wab borken out
 
 sched_to_join <- sched_with_rtg |>
-  dplyr::select(game_id, type, team, opp, wab, wab_opp, result, score)
+  dplyr::select(game_id, type, team, opp, wab, wab_opp, result, score, game_score)
 
 # First table is only going to include results or played games
 team_sched_by_wab <- future_sched_with_ratings |>

@@ -14,6 +14,7 @@ select
     t.trk_percentile,
     t.kp_percentile,
     t.net_percentile,
+    t.net,
     t.wab_percentile,
     t.season_avg,
     t.last_five_avg,
@@ -30,7 +31,8 @@ group by
     t.trk_percentile,
     t.kp_percentile,
     t.net_percentile,
+    t.net,
     t.wab_percentile,
     t.season_avg,
     t.last_five_avg
-order by t.season_avg desc
+order by t.net asc

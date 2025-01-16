@@ -23,7 +23,8 @@ numeric_strings <- links |>
   dplyr::mutate(
     numeric_string = sub(".*/(\\d+)$", "\\1", link) 
   ) |> 
-  dplyr::pull(numeric_string) 
+  dplyr::pull(numeric_string) |> 
+  dplyr::first()
 
 # ----------- function to scrape the rankings 
 net_ranks <- function(base_url, id) {
@@ -89,22 +90,37 @@ net_ranks <- function(base_url, id) {
 base_url <- "https://stats.ncaa.org/selection_rankings/nitty_gritties/"
 
 # go through the array of numeric strings and fetch data
-all_net_data <- purrr::map_dfr(numeric_strings, ~ net_ranks(base_url, .x)) |> 
+new_net_data <- purrr::map_dfr(numeric_strings, ~ net_ranks(base_url, .x)) |> 
   dplyr::mutate(team = ncaa_team_name_match(team),  # fix team names
-                conf = ncaa_conf_name_match(conf),
-                net_percentile = (1 - dplyr::percent_rank(net)
-                  )
-                )
+                conf = ncaa_conf_name_match(conf), # fix conf names
+                net_percentile = (1 - dplyr::percent_rank(net)))
 
+# add data for missing dates on Dec 24 and Dec 26 
+# all_net_data <- all_net_data |>
+#  dplyr::bind_rows(
+#    dplyr::filter(all_net_data, date == "2024-12-23") |>
+#      dplyr::mutate(date = as.Date("2024-12-24")),
+#    dplyr::filter(all_net_data, date == "2024-12-25") |>
+#      dplyr::mutate(date = as.Date("2024-12-26"))
+#  )
+
+# load previous net archive data and add new net data 
+archive_net_data <- readr::read_csv(here::here("data/net_archive.csv")) |> 
+  dplyr::select(-1) |> 
+  dplyr::bind_rows(new_net_data)
+
+# write csv to preserve net ratings 
+write.csv(archive_net_data, here::here("data/net_archive.csv"))
 
 # now only grab net for today's date, which is actually yesterday!
 yesterday_date <- Sys.Date() - 1
 
 net_for_today <- all_net_data |> 
-  dplyr::filter(date == yesterday_date)
-
+  dplyr::filter(date == yesterday_date) |> 
+  dplyr::distinct(team, .keep_all = TRUE)
 
 # ----------------------------- Write to duckdb
 write_to_duckdb(all_net_data, "net_archive")
+write_to_duckdb(net_for_today, "net_for_today")
 
 
