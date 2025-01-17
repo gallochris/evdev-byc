@@ -8,6 +8,8 @@ queries:
 
 ### Quadrant Summary by Conference
 
+This shows win percentages by quadrant in **non-conference play only** based on current NET rankings.
+
 <DataTable data={quad_summary} rows=all search=true>
   <Column id=conf title="League"/>
   <Column id=q1_games title="G" colGroup="Quad 1"/>

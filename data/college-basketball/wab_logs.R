@@ -13,9 +13,9 @@ barts <- ratings |>
   dplyr::add_row(
     team = "BubTeam",
     # define the bubble team - tune this over time
-    barthag = .865,
+    barthag = .875,
     # this number goes down, wab should go up
-    adj_o = 115.973,
+    adj_o = 115.37,
     # this number goes up, wab should go up
     adj_d = 99.49
   ) |>

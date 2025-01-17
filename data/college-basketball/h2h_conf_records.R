@@ -93,6 +93,7 @@ write_to_duckdb(hth_recs, "hth_recs")
 
 # # ----------------------------- Summarize by quads
 quad_summary <- games_with_ratings |>
+  dplyr::filter(type == "nc") |> 
   dplyr::group_by(conf) |>
   dplyr::summarise(
     q1_games = dplyr::coalesce(sum(quad == "Quadrant 1"), 0),
