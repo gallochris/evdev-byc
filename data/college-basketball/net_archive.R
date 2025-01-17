@@ -115,12 +115,12 @@ write.csv(archive_net_data, here::here("data/net_archive.csv"))
 # now only grab net for today's date, which is actually yesterday!
 yesterday_date <- Sys.Date() - 1
 
-net_for_today <- all_net_data |> 
+net_for_today <- archive_net_data |> 
   dplyr::filter(date == yesterday_date) |> 
   dplyr::distinct(team, .keep_all = TRUE)
 
 # ----------------------------- Write to duckdb
-write_to_duckdb(all_net_data, "net_archive")
+write_to_duckdb(archive_net_data, "net_archive")
 write_to_duckdb(net_for_today, "net_for_today")
 
 
