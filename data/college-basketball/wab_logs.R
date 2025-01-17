@@ -171,7 +171,9 @@ future_sched_with_ratings <-
     wabW,
     wabL
   ) |>
-  cbbdata::cbd_add_net_quad() |> 
+  dplyr::mutate(team = team_name_lookup(team)) |> # revert names to get quad
+  dplyr::mutate(opp = team_name_lookup(opp)) |>  # data
+  cbbdata::cbd_add_net_quad() |> # add quad data and net
   dplyr::mutate(team = team_name_update(team)) |> # now revert back
   dplyr::mutate(opp = team_name_update(opp)) # to match other data, wow
 
