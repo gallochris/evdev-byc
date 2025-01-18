@@ -5,6 +5,7 @@ sidebar_position: 1
 queries:
   - team_sum_tbl: college-basketball/team_sum_tbl.sql
   - game_scores_array: college-basketball/game_scores_array.sql
+description: NET rankings percentiles and Game Scores. 
 ---
 
 ### Teams

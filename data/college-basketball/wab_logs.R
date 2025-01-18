@@ -120,7 +120,9 @@ sched_with_rtg <- all_team_sched |>
     wab_opp,
     net,
     quad,
-    game_score
+    game_score,
+    conf,
+    opp_conf
   )
 
 # Now add in the future games
@@ -135,6 +137,15 @@ all_team_future <- cbbdata::cbd_torvik_season_schedule(year = 2025) |>
 all_team_future_visitors <- cbbdata::cbd_torvik_season_schedule(year = "2025") |>
   dplyr::filter(!game_id %in% playedGames & type != "nond1") |>
   dplyr::mutate(team = away, opp = home)
+
+# add in conferences 
+team_confs <- sched_with_rtg |> 
+  dplyr::select(team, conf) |> 
+  dplyr::distinct(team, .keep_all = TRUE)
+
+opp_confs <- sched_with_rtg |> 
+  dplyr::select(opp, opp_conf) |> 
+  dplyr::distinct(opp, .keep_all = TRUE)
 
 future_sched_with_ratings <-
   rbind.data.frame(all_team_future, all_team_future_visitors) |>
@@ -156,6 +167,8 @@ future_sched_with_ratings <-
   dplyr::mutate(wabW = (1 - bub_win_prob),
                 wabL = -bub_win_prob,
   ) |>
+  dplyr::left_join(team_confs, by = "team") |> 
+  dplyr::left_join(opp_confs, by ="opp") |> 
   dplyr::select(
     game_id,
     date,
@@ -169,7 +182,9 @@ future_sched_with_ratings <-
     bub_rtg,
     bub_win_prob,
     wabW,
-    wabL
+    wabL,
+    conf,
+    opp_conf
   ) |>
   dplyr::mutate(team = team_name_lookup(team)) |> # revert names to get quad
   dplyr::mutate(opp = team_name_lookup(opp)) |>  # data
@@ -207,7 +222,7 @@ team_future_by_wab <- future_sched_with_ratings |>
     wabW = round(wabW, 2),
     wabL = round(wabL, 2)
   ) |>
-  dplyr::select(-wab, -wab_opp, -result, -score)
+  dplyr::select(-wab, -wab_opp, -result, -score) 
 
 
 # ----------------------------- Write to duckdb

@@ -4,6 +4,7 @@ hide_title: true
 sidebar_position: 6
 queries: 
   - quad_summary: college-basketball/quad_summary.sql
+description: Non-conference results by quadrant across different leagues.
 ---
 
 ### Quadrant Summary by Conference

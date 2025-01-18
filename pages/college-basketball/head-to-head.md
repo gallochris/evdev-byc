@@ -4,6 +4,7 @@ hide_title: true
 sidebar_position: 5
 queries: 
   - hth_records: college-basketball/hth_records.sql
+description: Head-to-head records across differnet conferences. 
 ---
 
 ### Head-to-head summary

@@ -4,6 +4,7 @@ hide_title: true
 sidebar_position: 3
 queries: 
   - gamelog: college-basketball/gamelog.sql
+description: Log of all played games across D-I teams. 
 ---
 
 ### Gamelog 
@@ -52,7 +53,7 @@ from gamelog
 
 <DataTable data={gamelog} rows=10 search=true rowNumbers=true>
   <Column id=team_with_rk title="Team"/>
-  <Column id=delta contentType=delta fmt=# title="+/-"/>
+  <Column id=delta contentType=colorscale colorScale={['#e57373', 'floralwhite', '#81c784']} colorMid=0 fmt=# title="+/-"/>
   <Column id=opp_with_rk title="Opponent"/>
   <Column id=score_sentence contentType=colorscale title="Result"/>
   <Column id=location title="Location"/>

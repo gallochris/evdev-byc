@@ -5,6 +5,7 @@ sidebar_position: 2
 queries: 
   - conf_standings: college-basketball/conf_standings.sql
   - conf_summary: college-basketball/conf_summary.sql
+description: League standings and point differentials by location. 
 ---
 
 ### Conference Standings
@@ -59,11 +60,11 @@ A "close" game is decided by fewer than six points. A "blowout" is decided by 16
   <Column id=team title="Team"/>
   <Column id=wins title="W" colGroup="{inputs.conf.value}"/>
   <Column id=loss title="L" colGroup="{inputs.conf.value}"/>
-  <Column id=delta contentType=delta fmt=# title="+/-" colGroup="{inputs.conf.value}"/>
+  <Column id=delta contentType=colorscale colorScale={['#e57373', 'floralwhite', '#81c784']} colorMid=0 fmt=# title="+/-" colGroup="{inputs.conf.value}"/>
   <Column id=home_wins title="W" colGroup="Home"/>
   <Column id=home_loss title="L" colGroup="Home"/>
-  <Column id=home_delta contentType=delta fmt=# title="+/-" colGroup="Home"/>
+  <Column id=home_delta contentType=colorscale colorScale={['#e57373', 'floralwhite', '#81c784']} colorMid=0 fmt=# title="+/-" colGroup="Home"/>
   <Column id=away_wins title="W" colGroup="Away"/>
   <Column id=away_loss title="L" colGroup="Away"/>
-  <Column id=away_delta contentType=delta fmt=# title="+/-" colGroup="Away"/>
+  <Column id=away_delta contentType=colorscale colorScale={['#e57373', 'floralwhite', '#81c784']} colorMid=0 fmt=# title="+/-" colGroup="Away"/>
 </DataTable>

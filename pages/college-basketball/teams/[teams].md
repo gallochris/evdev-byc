@@ -1,5 +1,6 @@
 ---
 title: Team Sheet
+description: Team details across predictive and resume metrics.
 hide_title: true
 queries:
   - team_sum_tbl: college-basketball/team_sum_tbl.sql

@@ -1,5 +1,6 @@
 ---
 title: "Data"
+description: Data app to complement the Bless your chart newsletter. 
 ---
 
 ## About
@@ -26,6 +27,6 @@ Data includes:
 
 ### Data sources
 
-Data sources include [cfbfastR](https://cfbfastr.sportsdataverse.org/index.html), [bcftoys.com](https://www.bcftoys.com/), [ESPN.com](https://www.espn.com/), [cbbdata](https://github.com/andreweatherman/cbbdata/tree/main) + [barttorvik.com](https://barttorvik.com/#), and [hoopR](https://hoopr.sportsdataverse.org/).
+Data sources include [cbbdata](https://github.com/andreweatherman/cbbdata/tree/main) + [barttorvik.com](https://barttorvik.com/#), [stats.ncaa.org](https://stats.ncaa.org/selection_rankings/season_divisions/18403/nitty_gritties), and [hoopR](https://hoopr.sportsdataverse.org/).
 
 The data is cleaned and transformed using the R programming language. This site is built using [evidence.dev](https://evidence.dev/) and [duckdb](https://duckdb.org/).

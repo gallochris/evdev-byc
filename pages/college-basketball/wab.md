@@ -6,6 +6,7 @@ active: false
 queries: 
   - wab_team_schedule: college-basketball/wab_team_schedule.sql
   - wab_team_future: college-basketball/wab_team_future.sql
+description: Log of played games and scheduled games by estimated WAB. 
 ---
 
 ### WAB Team Schedule 
@@ -37,6 +38,14 @@ from wab_team_schedule
     <DropdownOption valueLabel = "Q2" value ="Q2" />
     <DropdownOption valueLabel = "Q3" value ="Q3" />
     <DropdownOption valueLabel = "Q4" value ="Q4" />
+</Dropdown>
+
+<Dropdown data={wab_team_schedule} name=conf value=conf defaultValue="%">
+  <DropdownOption value="%" valueLabel="Conference"/>
+</Dropdown>
+
+<Dropdown data={wab_team_schedule} name=opp_conf value=opp_conf defaultValue="%">
+  <DropdownOption value="%" valueLabel="Opp Conference"/>
 </Dropdown>
 
 ```sql team_wab_count
@@ -118,7 +127,6 @@ where team = '${inputs.team.value}'
   <DropdownOption value="%" valueLabel="Team"/>
 </Dropdown>
 
-
 <Dropdown name=quad_filter title="Quadrant" >
     <DropdownOption valueLabel ="All" value ="%" default/>
     <DropdownOption valueLabel = "Q1" value ="Q1" />
@@ -128,6 +136,14 @@ where team = '${inputs.team.value}'
 </Dropdown>
 
 
+<Dropdown data={wab_team_future} name=conf value=conf defaultValue="%">
+  <DropdownOption value="%" valueLabel="Conference"/>
+</Dropdown>
+
+<Dropdown data={wab_team_future} name=opp_conf value=opp_conf defaultValue="%">
+  <DropdownOption value="%" valueLabel="Opp Conference"/>
+</Dropdown>
+
 
 ```sql team_wab_future
 with team_wab_future_stats as (
@@ -135,8 +151,7 @@ with team_wab_future_stats as (
     team,
     round(sum(wabW), 2) as total_wab_future
   from cbb.wab_team_future
-  where date > CURRENT_DATE - 1
-    and (
+  where (
       '${inputs.quad_filter.value}' = '%' 
       or 
       quad = '${inputs.quad_filter.value}'
