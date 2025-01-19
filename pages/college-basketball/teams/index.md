@@ -29,7 +29,7 @@ select conf from team_sum_tbl
   <Column id=team title="Team"/>
   <Column id=record title="W-L"/>
   <Column id="net_percentile" fmt="pct" title="NET %" contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9/>
-  <Column id=season_avg fmt=num1 title="Season" colGroup="Game Score Avg"/>
+  <Column id=season_avg fmt=num title="Season" colGroup="Game Score Avg"/>
   <Column id=last_five_avg fmt=num1 title="Last 5" colGroup="Game Score Avg"/>
   <Column id=game_scores title="Trend" colGroup="Game Score Avg" contentType=sparkarea sparkX=date sparkY=game_score sparkColor=#53768a/>
 </DataTable>
