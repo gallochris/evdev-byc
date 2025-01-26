@@ -224,9 +224,29 @@ team_future_by_wab <- future_sched_with_ratings |>
   ) |>
   dplyr::select(-wab, -wab_opp, -result, -score) 
 
+# ----------------------------- Wall of WAB
+
+wall_of_wab <- team_sched_by_wab |> 
+  dplyr::group_by(team, conf) |> 
+  dplyr::summarise(
+    total = sum(wab_result),
+    non_con = sum(wab_result[type == "nc"], na.rm = TRUE),
+    league = sum(wab_result[type == "conf"], na.rm = TRUE),
+    home = sum(wab_result[location == "H"], na.rm = TRUE),
+    away = sum(wab_result[location == "A"], na.rm = TRUE),
+    neutral = sum(wab_result[location == "N"], na.rm = TRUE),
+    quad_1 = sum(wab_result[quad == "Q1"], na.rm = TRUE),
+    quad_2 = sum(wab_result[quad == "Q2"], na.rm = TRUE),
+    quad_3 = sum(wab_result[quad == "Q3"], na.rm = TRUE),
+    quad_4 = sum(wab_result[quad == "Q4"], na.rm = TRUE),
+    
+  ) |> 
+  dplyr::arrange(-total)
 
 # ----------------------------- Write to duckdb
 write_to_duckdb(team_sched_by_wab, "wab_team_schedule")
 
 write_to_duckdb(team_future_by_wab, "wab_team_future")
+
+write_to_duckdb(wall_of_wab, "wall_of_wab")
 
