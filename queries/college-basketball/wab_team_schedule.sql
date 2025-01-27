@@ -14,7 +14,7 @@ select
   where conf like '${inputs.conf.value}'
     and opp_conf like '${inputs.opp_conf.value}'
     and wab_result is not null
-    and team like '${inputs.team.value}'
+    and team LIKE '${inputs.team.value.replace(/'/g, "''")}'
     and  (
       '${inputs.result_filter.value}' = '%'
       or 
