@@ -7,7 +7,7 @@ source(here::here("data/college-basketball/base_query.R"))
 # home court 
 hcMultiplier <- 0.014
 
-# Add the efficiency ratingsxq
+# Add the efficiency ratings
 barts <- ratings |>
   dplyr::select(team, barthag, adj_o, adj_d) |>
   dplyr::add_row(
@@ -15,7 +15,7 @@ barts <- ratings |>
     # define the bubble team - tune this over time
     barthag = .875,
     # this number goes down, wab should go up
-    adj_o = 115.37,
+    adj_o = 115.07,
     # this number goes up, wab should go up
     adj_d = 99.49
   ) |>
