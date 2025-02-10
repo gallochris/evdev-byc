@@ -21,12 +21,12 @@ where conf like '${inputs.conf.value}'
 
   <DataTable data={wall_of_wab} rows=25 search=true rowNumbers=true>
   <Column id=team title="Team"/>
-  <Column id=total contentType=colorscale colorScale={['#e57373', 'floralwhite', '#81c784']} colorMid=0 fmt=num2 title="WAB +/-"/>
-  <Column id=non_con contentType=colorscale colorScale={['#e57373', 'floralwhite', '#81c784']} colorMid=0 fmt=num2  title="Non-Conf" colGroup="Type"/>
-  <Column id=league contentType=colorscale colorScale={['#e57373', 'floralwhite', '#81c784']} colorMid=0 fmt=num2  title="Conf" colGroup="Type"/>
-  <Column id=home contentType=colorscale colorScale={['#e57373', 'floralwhite', '#81c784']} colorMid=0 fmt=num2  title="Home" colGroup="Location"/>
-  <Column id=neutral contentType=colorscale colorScale={['#e57373', 'floralwhite', '#81c784']} colorMid=0 fmt=num2  title="Neutral" colGroup="Location"/>
-  <Column id=away contentType=colorscale colorScale={['#e57373', 'floralwhite', '#81c784']} colorMid=0 fmt=num2  title="Away" colGroup="Location"/>
+  <Column id=total contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2 title="WAB +/-"/>
+  <Column id=non_con contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2  title="Non-Conf" colGroup="Type"/>
+  <Column id=league contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2  title="Conf" colGroup="Type"/>
+  <Column id=home contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2  title="Home" colGroup="Location"/>
+  <Column id=neutral contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2  title="Neutral" colGroup="Location"/>
+  <Column id=away contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2  title="Away" colGroup="Location"/>
   </DataTable>
   
 

@@ -2,8 +2,8 @@ name: Daily College Basketball Data Update
 
 on:
   schedule:
-    # Runs at 7 AM EST (12 UTC)
-    - cron: '0 12 * * *'
+    # Runs at 7:10 AM EST (12:10 UTC)
+    - cron: '10 12 * * *'
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
@@ -28,6 +28,7 @@ jobs:
         run: |
           install.packages(c("dplyr", "rvest", "readr", "glue", "purrr", "janitor", "here", "lubridate", "duckdb", "DBI", "tidyr", "remotes", "devtools"))
           remotes::install_github("andreweatherman/cbbdata")
+          remotes::install_github("sportsdataverse/hoopR")
         shell: Rscript {0}
     
       - name: Create DuckDB Directory
@@ -47,6 +48,7 @@ jobs:
           Rscript conf_standings.R
           Rscript net_archive.R
           Rscript team_sum_tbl.R
+          Rscript tram.R
       
     # Optional: Commit and push changes if your scripts modify files
       - name: Commit results
