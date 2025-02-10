@@ -15,7 +15,6 @@ tram_data <- cbbdata::cbd_torvik_team_factors(year = 2025) |>
     def_svi = ((100 - (100 * d_to_pct)) + (d_or_pct * (0.561 * (100 - (100 * d_to_pct))))),
     tram = off_svi - def_svi
   ) |> 
-  dplyr::left_join(raw_ratings, by = c("team")) |> 
   dplyr::mutate(adj_em = adj_o - adj_d) |> 
   dplyr::select(team, conf, tram, adj_em,
                 off_svi, def_svi, 
