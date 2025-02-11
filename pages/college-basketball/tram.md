@@ -24,7 +24,7 @@ select *
   </Dropdown>
 
   <DataTable data={tram_table} rows=25 search=true rowNumbers=true>
-  <Column id=torvik_team title="Team"/>
+  <Column id=team title="Team"/>
   <Column id=tram contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num1 title="Total +/-" colGroup="TRAM"/>
   <Column id=off_svi contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=95 fmt=num1 title="Offense +/-" colGroup="TRAM"/>
   <Column id=def_svi contentType=colorscale colorScale={['#c3f6c3', 'floralwhite', '#fbb0a9']} colorMid=95 fmt=num1  title="Defense" colGroup="TRAM"/>
