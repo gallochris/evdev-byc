@@ -5,12 +5,15 @@ sidebar_position: 8
 description: Turnover-rebound-adjusted-margin. 
 ---
 
-### TRAM: shooting independent efficiency
+### TRAM
 
-TRAM, Turnover Rebound Adjusted Margin, is a measure of shooting independent efficiency. It calculates shot volume or the quantity of scoring chances created through rebounds and turnovers, and does not include any shooting performance data. This borrows [John Gasaway's work on shot volume](https://johngasaway.com/2025/01/28/ways-to-calculate-what-is-called-shot-volume), and you can [read more about TRAM here](https://blessyourchart.substack.com/p/130-riding-the-shot-volume-tram). 
+TRAM, Turnover Rebound Adjusted Margin, tries to calculate shot volume or the quantity of scoring chances created through rebounds and turnovers. This metric does not explicitly include any shooting performance data. This borrows [John Gasaway's work on shot volume](https://johngasaway.com/2025/01/28/ways-to-calculate-what-is-called-shot-volume), and you can [read more about TRAM here](https://blessyourchart.substack.com/p/130-riding-the-shot-volume-tram). 
 
-A team with a higher TRAM is more likely to overcome a poor shooting performance. A lower TRAM means a team is more likely to rely on shooting (eFG% and/or FTRate) to generate efficiency
-
+<Details title="Notes">
+<li>A team with a higher TRAM is more likely to overcome a poor shooting performance.</li> 
+<li>A team with a lower TRAM is more likely to rely on shooting to generate efficiency.</li>
+<li>Remember, shooting factors (eFG%, FTRate, FT%) have a significantly greater impact on a team's performance.</li>
+</Details>
 
 ```sql tram_table
 select *
