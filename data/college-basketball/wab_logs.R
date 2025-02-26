@@ -17,7 +17,7 @@ barts <- ratings |>
     # this number goes down, wab should go up
     adj_o = 115.7,
     # this number goes up, wab should go up
-    adj_d = 99.49
+    adj_d = 99.42
   ) |>
   dplyr::mutate(
     oHome = adj_o * (1 + hcMultiplier),
