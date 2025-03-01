@@ -15,7 +15,7 @@ barts <- ratings |>
     # define the bubble team - tune this over time
     barthag = .875,
     # this number goes down, wab should go up
-    adj_o = 115.68,
+    adj_o = 115.78,
     # this number goes up, wab should go up
     adj_d = 99.45
   ) |>
@@ -249,4 +249,5 @@ write_to_duckdb(team_sched_by_wab, "wab_team_schedule")
 write_to_duckdb(team_future_by_wab, "wab_team_future")
 
 write_to_duckdb(wall_of_wab, "wall_of_wab")
+
 
