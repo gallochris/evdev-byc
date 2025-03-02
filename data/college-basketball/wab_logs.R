@@ -15,7 +15,7 @@ barts <- ratings |>
     # define the bubble team - tune this over time
     barthag = .875,
     # this number goes down, wab should go up
-    adj_o = 115.78,
+    adj_o = 115.80,
     # this number goes up, wab should go up
     adj_d = 99.45
   ) |>
