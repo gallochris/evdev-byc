@@ -15,9 +15,9 @@ barts <- ratings |>
     # define the bubble team - tune this over time
     barthag = .875,
     # this number goes down, wab should go up
-    adj_o = 115.91,
+    adj_o = 116.05,
     # this number goes up, wab should go up
-    adj_d = 99.70
+    adj_d = 99.67
   ) |>
   dplyr::mutate(
     oHome = adj_o * (1 + hcMultiplier),
