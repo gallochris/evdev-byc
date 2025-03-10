@@ -152,6 +152,8 @@ order by total_wab desc
 
 ### Scheduled Games
 
+{#if wab_team_future.length !== 0 } 
+
 {#each wab_team_future as row}
 <BigValue
   data={row}
@@ -176,3 +178,9 @@ order by total_wab desc
   <Column id=wabL contentType=delta fmt=num2 title="WAB -"/>
   <Column id=date fmt=m/d/y title="Date"/>
 </DataTable>
+
+{:else}
+
+No scheduled games or known opponents.
+
+{/if}
