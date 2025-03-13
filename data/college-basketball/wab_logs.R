@@ -15,9 +15,9 @@ barts <- ratings |>
     # define the bubble team - tune this over time
     barthag = .875,
     # this number goes down, wab should go up
-    adj_o = 115.90,
+    adj_o = 116.10,
     # this number goes up, wab should go up
-    adj_d = 99.70
+    adj_d = 99.60
   ) |>
   dplyr::mutate(
     oHome = adj_o * (1 + hcMultiplier),
@@ -249,5 +249,6 @@ write_to_duckdb(team_sched_by_wab, "wab_team_schedule")
 write_to_duckdb(team_future_by_wab, "wab_team_future")
 
 write_to_duckdb(wall_of_wab, "wall_of_wab")
+
 
 
