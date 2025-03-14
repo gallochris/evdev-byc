@@ -24,9 +24,10 @@ where conf like '${inputs.conf.value}'
   <Column id=total contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2 title="WAB +/-"/>
   <Column id=non_con contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2  title="Non-Conf" colGroup="Type"/>
   <Column id=league contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2  title="Conf" colGroup="Type"/>
-  <Column id=home contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2  title="Home" colGroup="Location"/>
-  <Column id=neutral contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2  title="Neutral" colGroup="Location"/>
-  <Column id=away contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2  title="Away" colGroup="Location"/>
+  <Column id=quad_1 contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2  title="Q1" colGroup="Quadrants"/>
+  <Column id=quad_2 contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2  title="Q2" colGroup="Quadrants"/>
+  <Column id=quad_3 contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2  title="Q3" colGroup="Quadrants"/>
+  <Column id=quad_4 contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num2  title="Q4" colGroup="Quadrants"/>
   </DataTable>
   
 
