@@ -1,62 +1,48 @@
 appearance:
-  default: light
-  switcher: false
+  default: system
+  switcher: true
 
+# Retro theme
 theme:
   colorPalettes:
     default:
-      light:
-        - "#236aa4"
-        - "#45a1bf"
-        - "#a5cdee"
-        - "#8dacbf"
-        - "#85c7c6"
-        - "#d2c6ac"
-        - "#f4b548"
-        - "#8f3d56"
-        - "#71b9f4"
-        - "#46a485"
-      dark:
-        - "#236aa4"
-        - "#45a1bf"
-        - "#a5cdee"
-        - "#8dacbf"
-        - "#85c7c6"
-        - "#d2c6ac"
-        - "#f4b548"
-        - "#8f3d56"
-        - "#71b9f4"
-        - "#46a485"
+      - "#009ddc"  # Blue
+      - "#963d97"  # Purple
+      - "#e03a3e"  # Red
+      - "#f5821f"  # Orange
+      - "#fdb827"  # Yellow
+      - "#61bb46"  # Green
+      - "#ffcc00"  # Gold
+      - "#ff7f50"  # Coral
+      - "#ff6347"  # Tomato
+      - "#ff4500"  # Orange Red
+      - "#da70d6"  # Orchid
   colorScales:
     default:
-      light:
-        - "#ADD8E6"
-        - "#00008B"
-      dark:
-        - "#ADD8E6"
-        - "#00008B"
+      - "#009ddc"  # Blue
+      - "#e03a3e"  # Red
   colors:
     primary:
-      light: "#2563eb"
-      dark: "#3b82f6"
+      light: "#009ddc"  # Blue
+      dark: "#009ddc"  # Blue
     accent:
-      light: "#c2410c"
-      dark: "#fdba74"
+      light: "#e03a3e"  # Red
+      dark: "#e03a3e"  # Red
     base:
-      light: "#ffffff"
-      dark: "#09090b"
+      light: "#F8F5EE" # Paper
+      dark: "#09090b" # Dark
     info:
-      light: "#0284c7"
-      dark: "#38bdf8"
-    positive:
-      light: "#16a34a"
-      dark: "#4ade80"
+      light: "#009ddc"  # Blue
+      dark: "#009ddc"  # Blue
     warning:
-      light: "#f8c900"
-      dark: "#fbbf24"
+      light: "#fdb827"  # Yellow
+      dark: "#fdb827"  # Yellow
     negative:
-      light: "#dc2626"
-      dark: "#f87171"
+      light: "#e03a3e"  # Red
+      dark: "#e03a3e"  # Red
+    positive:
+      light: "#61bb46"  # Green
+      dark: "#61bb46"  # Green
 
 plugins:
   components:
