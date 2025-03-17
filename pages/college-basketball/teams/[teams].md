@@ -25,6 +25,20 @@ queries:
 />
 {/each}
 
+```sql team_data
+  select * from team_sum_tbl
+  where team like '${params.teams.replace(/'/g, "''")}' 
+```
+
+{#each team_data as row}
+
+<BigValue
+  data={row}
+  value=r64
+  title="R64"
+/>
+{/each}
+
 
 {#each net_for_today as row}
 

@@ -8,27 +8,31 @@ queries:
 description: NET rankings percentiles and Game Scores. 
 ---
 
-### Teams
+### 2025 NCAA Tournament 
 
-Shows the percentile from the [NCAA's NET rankings](https://stats.ncaa.org/selection_rankings/nitty_gritties/42188?utf8=%E2%9C%93&commit=Submit). The percentile is computed from the actual ranking (1 through 364) instead of the rating as the NET does not expose the actual team rating, only the ranking. 
+Updated March 17 to show the 68-team NCAA Tournament field by region. Shows the odds to reach the first few rounds per [Bart Torvik](https://barttorvik.com/tourneytime.php), [TRAM](https://blessyourchart.substack.com/p/130-riding-the-shot-volume-tram), and Game Scores for each team.
 
-[Game Score is a rating from Bart Torvik](https://adamcwisports.blogspot.com/2015/11/introducing-g-score.html) that rates each team's games on a scale from 0 (bad) to 100 (perfect). The data shows a team's average across all games, the last five games, and the trend over the course of the entire season.
+[Game Score is a rating from Torvik](https://adamcwisports.blogspot.com/2015/11/introducing-g-score.html) that rates each team's games on a scale from 0 (bad) to 100 (perfect). The data shows a team's average across all games, the last five games, and the trend over the course of the entire season.
 
 Click through to view an individual team's details. 
 
 
-```sql confs
-select conf from team_sum_tbl
+```sql regions
+select region from team_sum_tbl
 ```
 
-<Dropdown data={confs} name=conf value=conf defaultValue="%">
-  <DropdownOption value="%" valueLabel="All conferences"/>
+<Dropdown data={regions} name=region value=region defaultValue="%">
+  <DropdownOption value="%" valueLabel="Region"/>
 </Dropdown>
 
-<DataTable data={game_scores_array} rows=50 link=team_link search=true rowNumbers=true>
+<DataTable data={game_scores_array} rows=68 link=team_link search=true groupBy=region groupType=section groupNamePosition=top rowNumbers=false>
+  <Column id=region title="Region"/>
+  <Column id=seed title="Seed"/>
   <Column id=team title="Team"/>
-  <Column id=record title="W-L"/>
-  <Column id="net_percentile" fmt="pct" title="NET %" contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9/>
+  <Column id=r64 fmt=pct1 contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="R64"/>
+  <Column id=r32 fmt=pct1 contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="R32"/>
+  <Column id=s16 fmt=pct1 contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="S16"/>
+  <Column id=tram contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num1 title="TRAM +/-"/>
   <Column id=season_avg fmt=num1 title="Season" colGroup="Game Score Avg"/>
   <Column id=last_five_avg fmt=num1 title="Last 5" colGroup="Game Score Avg"/>
   <Column id=game_scores title="Trend" colGroup="Game Score Avg" contentType=sparkarea sparkX=date sparkY=game_score sparkColor=#53768a/>

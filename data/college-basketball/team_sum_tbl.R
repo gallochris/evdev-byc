@@ -4,9 +4,33 @@
 source(here::here("data/college-basketball/utils.R"))
 source(here::here("data/college-basketball/base_query.R"))
 
+# Add NCAA team sheets 
+bart_ncaa <- "https://barttorvik.com/tourneytime.php"
+
+webpage <- rvest::read_html(bart_ncaa)
+
+raw_table <- webpage |>
+  rvest::html_nodes("table") |>
+  lapply(rvest::html_table) |>
+  purrr::pluck(1) 
+
+bart_ncaa <- raw_table |>
+  janitor::clean_names() |> 
+  dplyr::mutate(
+    team = team_name_update(team),
+    r64 = dplyr::case_when(
+      r64 == "✓" ~ 100,       
+      TRUE ~ suppressWarnings(as.numeric(r64)),
+      TRUE ~ as.numeric(r64)
+    )
+  ) |> 
+  dplyr::mutate(across(c(r64, r32, s16, e8, f4, f2, champ), ~ . / 100)) |> 
+  dplyr::select(seed, region, team, r64, 
+                r32, s16, e8, f4, f2, champ)
+
 
 # Goal is to create a Team page or pseduo-team sheet 
-# Sore ratings
+# Sort ratings
 bart_url <- "https://barttorvik.com/teamsheets.php?sort=6&conlimit=All&year=2025"
 
 webpage <- rvest::read_html(bart_url)
@@ -79,13 +103,35 @@ net_data <- readr::read_csv(here::here("data/net_archive.csv")) |>
   dplyr::select(team, net, net_percentile) |> 
   dplyr::distinct(team, .keep_all = TRUE)
 
-# join table
+
+# add TRAM 
+tram_data <- cbbdata::cbd_torvik_team_factors(year = 2025) |> 
+  dplyr::mutate(
+    to_pct = tov_rate / 100,
+    or_pct = oreb_rate / 100,
+    d_to_pct = def_tov_rate / 100,
+    d_or_pct = dreb_rate / 100
+  ) |> 
+  dplyr::mutate(
+    off_svi = ((100 - (100 * to_pct)) + (or_pct * (0.561 * (100 - (100 * to_pct))))),
+    def_svi = ((100 - (100 * d_to_pct)) + (d_or_pct * (0.561 * (100 - (100 * d_to_pct))))),
+    tram = off_svi - def_svi
+  ) |> 
+  dplyr::mutate(adj_em = adj_o - adj_d) |> 
+  dplyr::select(team, tram)
+
+# join tables
 team_sum_tbl <- bart_table |> 
+  dplyr::left_join(bart_ncaa, by = "team") |> 
   dplyr::left_join(game_scores_with_conf, by = "team") |> 
   dplyr::left_join(net_data, by = "team") |> 
-  dplyr::select(team, record, conf, net, trk, kp, wab,
+  dplyr::left_join(tram_data, by = "team") |> 
+  dplyr::select(seed, region, team, record, conf, tram, net, trk, kp, wab,
                 net_percentile, trk_percentile, kp_percentile, 
-                wab_percentile, season_avg, last_five_avg)
+                wab_percentile, season_avg, last_five_avg, 
+                r64, r32, s16, e8, f4, f2, champ) |> 
+  dplyr::filter(!is.na(region)) # filter out ncaa teams 
+
 
 # ----------------------------- Write to duckdb
 write_to_duckdb(team_sum_tbl, "team_sum_tbl")
