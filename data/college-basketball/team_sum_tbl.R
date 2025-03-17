@@ -92,7 +92,11 @@ game_scores_with_conf <- games_with_ratings |>
 
 # series data for the sparkline table 
 game_scores_series <- games_with_ratings |> 
-  dplyr::select(team, date, game_score) |> 
+  dplyr::mutate(score_sentence = paste0(
+    result, ", ", pts, "-", opp_pts,
+    ", ", opp
+  )) |> 
+  dplyr::select(team, date, score_sentence, game_score) |> 
   dplyr::arrange(team, date)
 
 # load net data for yesterday. 

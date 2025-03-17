@@ -23,90 +23,6 @@ queries:
   value=team_record
   title="W-L"
 />
-{/each}
-
-```sql team_data
-  select * from team_sum_tbl
-  where team like '${params.teams.replace(/'/g, "''")}' 
-```
-
-{#each team_data as row}
-
-<BigValue
-  data={row}
-  value=r64
-  title="R64"
-/>
-{/each}
-
-
-{#each net_for_today as row}
-
-<BigValue
-  data={row}
-  value=net_percentile
-  title="NET %tile"
-  fmt='pct1'
-/>
-
-<BigValue
-  data={row}
-  value=net
-  title="NET Rank"
-  fmt='num'
-/>
-{/each}
-
-<BarChart
-    data={net_over_time} 
-    x=date
-    y=net_percentile
-    xFmt=mdy
-    yFmt=pct1
-    title='NET change over time'
-    yMax=1
-    yMin=0
-    emptySet=pass
-    fillColor="#22c55e"
-/>
-
-### Results by game
-
-{#each net_for_today as row}
-
-<BigValue
-  data={row}
-  value=q1_record
-  title="Q1"
-/>
-
-<BigValue
-  data={row}
-  value=q2_record
-  title="Q2"
-/>
-
-<BigValue
-  data={row}
-  value=q3_record
-  title="Q3"
-/>
-
-<BigValue
-  data={row}
-  value=q4_record
-  title="Q4"
-/>
-{/each}
-
-{#each filtered_wab_data as row}
-
-<BigValue
-  data={row}
-  value=total_wab_count
-  title="WAB"
-  fmt=num2
-/>
 
 <BigValue
   data={row}
@@ -132,6 +48,79 @@ queries:
   fmt='num'
 />
 {/each}
+
+NCAA Tournament odds to advance to each round per Torvik. 
+
+```sql team_data
+  select * from team_sum_tbl
+  where team like '${params.teams.replace(/'/g, "''")}' 
+```
+
+{#each team_data as row}
+
+<BigValue
+  data={row}
+  value=r32
+  fmt=pct1
+  title="Round of 32"
+/>
+
+<BigValue
+  data={row}
+  value=s16
+  fmt=pct1
+  title="Sweet 16"
+/>
+
+<BigValue
+  data={row}
+  value=e8
+  fmt=pct1
+  title="Elite 8"
+/>
+
+<BigValue
+  data={row}
+  value=f4
+  fmt=pct1
+  title="Final Four"
+/>
+
+<BigValue
+  data={row}
+  value=f2
+  fmt=pct1
+  title="Title Game"
+/>
+
+<BigValue
+  data={row}
+  value=champ
+  fmt=pct1
+  title="Champ"
+/>
+{/each}
+
+```sql game_scores_over_time
+  select * from game_scores_series
+  where team like '${params.teams.replace(/'/g, "''")}' 
+```
+
+<LineChart
+    data={game_scores_over_time} 
+    x=date
+    y=game_score
+    xFmt=mdy
+    yFmt=num1
+    title='Game Score over time'
+    yMax=100
+    yMin=0
+    emptySet=pass
+    connectGroup=score_sentence
+    fillColor="#22c55e"
+/>
+
+### Results by game
 
 <DataTable data={wab_team_log} rows=all groupBy=team search=true rowNumbers=true>
   <Column id=wab_result contentType=delta fmt=num2 title="WAB +/-"/>
