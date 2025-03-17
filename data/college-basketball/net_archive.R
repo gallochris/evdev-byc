@@ -43,6 +43,7 @@ net_ranks <- function(base_url, id) {
   
   net_table <- net_table |>   
     dplyr::mutate(
+      Team = stringr::str_remove(Team, "\\(AQ\\)"),
       date = gsub("[^0-9.-]", "", colnames(net_table[3])),
       # replace periods with slashes for better date formate
       date = gsub("\\.", "/", date),
