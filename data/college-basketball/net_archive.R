@@ -117,7 +117,7 @@ write.csv(archive_net_data, here::here("data/net_archive.csv"))
 yesterday_date <- Sys.Date() - 1
 
 net_for_today <- archive_net_data |> 
-  dplyr::filter(date == yesterday_date) |> 
+  dplyr::filter(date == "2025-03-16") |> 
   dplyr::distinct(team, .keep_all = TRUE)
 
 # ----------------------------- Write to duckdb
