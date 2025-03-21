@@ -1,5 +1,5 @@
 ---
-title: Teams
+title: NCAAT Teams
 hide_title: true
 sidebar_position: 1
 queries:

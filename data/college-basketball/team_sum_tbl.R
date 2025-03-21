@@ -16,14 +16,12 @@ raw_table <- webpage |>
 
 bart_ncaa <- raw_table |>
   janitor::clean_names() |> 
-  dplyr::mutate(
-    team = team_name_update(team),
-    r64 = dplyr::case_when(
-      r64 == "✓" ~ 100,       
-      TRUE ~ suppressWarnings(as.numeric(r64)),
-      TRUE ~ as.numeric(r64)
-    )
-  ) |> 
+  dplyr::mutate(across(c(r64, r32, s16, e8, 
+                         f4, f2, champ),
+                       ~ dplyr::case_when(
+    . == "✓" ~ 100,
+    TRUE ~ suppressWarnings(as.numeric(.))
+  ))) |> 
   dplyr::mutate(across(c(r64, r32, s16, e8, f4, f2, champ), ~ . / 100)) |> 
   dplyr::select(seed, region, team, r64, 
                 r32, s16, e8, f4, f2, champ)
@@ -39,7 +37,8 @@ raw_table <- webpage |>
   rvest::html_nodes("table") |>
   lapply(rvest::html_table) |>
   purrr::pluck(1) |>
-  janitor::row_to_names(row = 1)
+  janitor::row_to_names(row = 1) |> 
+  janitor::clean_names()
 
 # Ensure unique column names
 raw_table <- setNames(raw_table, make.names(names(raw_table), unique = TRUE))
@@ -47,7 +46,8 @@ raw_table <- setNames(raw_table, make.names(names(raw_table), unique = TRUE))
 # Clean the names
 bart_table <- raw_table |>
   janitor::clean_names() |> 
-  tidyr::separate(team, into = c("team", "seed"), sep = "(?<=\\D) (?=[0-9])") |> 
+  tidyr::separate(team, into = c("team", "seed"), sep = "(?<=\\D) (?=[0-9])", 
+                  fill = "right") |> 
   dplyr::filter(team != "Team") |> 
   dplyr::mutate(
     team = stringr::str_remove(team, "F4O"),  # removes F4O
@@ -100,10 +100,11 @@ game_scores_series <- games_with_ratings |>
   dplyr::arrange(team, date)
 
 # load net data for yesterday. 
-yesterday_date <- Sys.Date() - 1
+# yesterday_date <- Sys.Date() - 1
+# NET rankings are paused on 3-16-2025
 
 net_data <- readr::read_csv(here::here("data/net_archive.csv")) |> 
-  dplyr::filter(date == yesterday_date) |> 
+  dplyr::filter(date == "2025-03-16") |> 
   dplyr::select(team, net, net_percentile) |> 
   dplyr::distinct(team, .keep_all = TRUE)
 
@@ -136,7 +137,62 @@ team_sum_tbl <- bart_table |>
                 r64, r32, s16, e8, f4, f2, champ) |> 
   dplyr::filter(!is.na(region)) # filter out ncaa teams 
 
+# ----------------------------- four factor accounting 
+lgeff <- 1.062
+lgor <- 29.8 /100
+
+ncaat_teams <- team_sum_tbl |> 
+  dplyr::pull(team)
+
+deano <- games_with_ratings |> 
+  dplyr::filter(type == "post" & team %in% ncaat_teams) |> 
+  dplyr::mutate(
+    fg_pts = (pts - ftm),
+    opp_fg_pts = (opp_pts - opp_ftm),
+    fgx = fga - fgm,
+    opp_fgx = opp_fga - opp_fgm
+  ) |> 
+  dplyr::mutate(
+    off_shooting = fg_pts - fgm * lgeff - (1 - lgor) * fgx * lgeff,
+    def_shooting = opp_fg_pts - opp_fgm * lgeff - (1 - lgor) * opp_fgx * lgeff,
+    off_turnovers = -lgeff*to,
+    def_turnovers = -lgeff*opp_to,
+    off_reb = (
+      (1-lgor)*oreb - lgor*opp_dreb) *lgeff,
+    def_reb = (
+      (1-lgor)*opp_oreb- lgor*dreb)*lgeff,
+    off_ft = ftm - 0.4*fta*lgeff+0.6*(fta-ftm)*lgeff,
+    def_ft = opp_ftm - 0.4*opp_fta*lgeff+0.6*(opp_fta-opp_ftm)*lgeff,
+    off_factors = (off_shooting + off_turnovers + off_reb + off_ft),
+    def_factors = (def_shooting + def_turnovers + def_reb + def_ft),
+    delta = off_factors - def_factors,
+    pts_diff = pts - opp_pts
+  ) |> 
+  dplyr::relocate(date, delta, pts_diff, off_ppp, def_ppp, team, opp, off_factors,
+                  def_factors, off_shooting, def_shooting, off_turnovers,
+                  def_turnovers, off_reb, def_reb, off_ft, def_ft,
+                  off_efg, def_efg, off_to, def_to,
+                  off_or, def_or, off_ftr, def_ftr)
+
+ncaat_log <- deano |> 
+  dplyr::mutate(off_ppp = round(off_ppp / 100, 2), 
+                def_ppp = round(def_ppp / 100, 2),
+                score_sentence = paste0(
+                  result, ", ", pts_scored, "-",
+                  pts_allowed),
+                shooting = round(off_shooting - def_shooting, 1),
+                turnovers = round(off_turnovers - def_turnovers, 1),
+                rebounds = round(off_reb - def_reb, 1),
+                freethrows = round(off_ft - def_ft, 1)
+  ) |> 
+  dplyr::select(team, opp, score_sentence, 
+                off_ppp, def_ppp, 
+                shooting, turnovers,
+                rebounds, freethrows
+  )
+
 
 # ----------------------------- Write to duckdb
 write_to_duckdb(team_sum_tbl, "team_sum_tbl")
 write_to_duckdb(game_scores_series, "game_scores_series")
+write_to_duckdb(ncaat_log, "ncaat_log")
