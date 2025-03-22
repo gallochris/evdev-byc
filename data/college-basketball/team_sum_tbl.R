@@ -174,21 +174,40 @@ deano <- games_with_ratings |>
                   off_efg, def_efg, off_to, def_to,
                   off_or, def_or, off_ftr, def_ftr)
 
-ncaat_log <- deano |> 
+ncaat_log <- games_with_ratings |> 
+  dplyr::filter(type == "post" & team %in% ncaat_teams) |> 
   dplyr::mutate(off_ppp = round(off_ppp / 100, 2), 
                 def_ppp = round(def_ppp / 100, 2),
                 score_sentence = paste0(
                   result, ", ", pts_scored, "-",
                   pts_allowed),
-                shooting = round(off_shooting - def_shooting, 1),
-                turnovers = round(off_turnovers - def_turnovers, 1),
-                rebounds = round(off_reb - def_reb, 1),
-                freethrows = round(off_ft - def_ft, 1)
+                shooting_3 = (tpm +opp_tpm) / (tpa + opp_tpa),
+                off_3 = tp_pct,
+                off_2 = (fgm - tpm) / (fga - tpa),
+                def_3 = opp_tp_pct,
+                def_2 = (opp_fgm - opp_tpm) / (opp_fga - opp_tpa)
   ) |> 
-  dplyr::select(team, opp, score_sentence, 
+  # add dates 
+  dplyr::mutate(
+    round = dplyr::case_when(
+      date %in% c("2025-03-18",
+                  "2025-03-19") ~ "First 4", 
+      date %in% c("2025-03-20",
+                  "2025-03-21") ~ "R64", 
+      date %in% c("2025-03-22",
+                  "2025-03-23") ~ "R32", 
+      date %in% c("2025-03-27",
+                  "2025-03-28") ~ "S16", 
+      date %in% c("2025-03-29",
+                  "2025-03-30") ~ "E8",
+      date %in% c("2025-04-05") ~ "F4",
+      date %in% c("2025-04-07") ~ "F2"
+                              )
+  ) |> 
+  dplyr::select(round, team, opp, score_sentence, 
                 off_ppp, def_ppp, 
-                shooting, turnovers,
-                rebounds, freethrows
+                shooting_3, off_efg, off_3, off_2,
+                def_efg, def_3, def_2
   )
 
 

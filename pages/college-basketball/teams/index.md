@@ -29,9 +29,9 @@ select region from team_sum_tbl
   <Column id=region title="Region"/>
   <Column id=seed title="Seed"/>
   <Column id=team title="Team"/>
-  <Column id=r64 fmt=pct1 contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="R64"/>
   <Column id=r32 fmt=pct1 contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="R32"/>
   <Column id=s16 fmt=pct1 contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="S16"/>
+  <Column id=e8 fmt=pct1 contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="E8"/>
   <Column id=tram contentType=colorscale colorScale={['#fbb0a9', 'floralwhite', '#c3f6c3']} colorMid=0 fmt=num1 title="TRAM +/-"/>
   <Column id=season_avg fmt=num1 title="Season" colGroup="Game Score Avg"/>
   <Column id=last_five_avg fmt=num1 title="Last 5" colGroup="Game Score Avg"/>
