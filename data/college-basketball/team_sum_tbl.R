@@ -174,13 +174,17 @@ deano <- games_with_ratings |>
                   off_efg, def_efg, off_to, def_to,
                   off_or, def_or, off_ftr, def_ftr)
 
-ncaat_log <- games_with_ratings |> 
+ncaat_log <- deano |> 
   dplyr::filter(type == "post" & team %in% ncaat_teams) |> 
   dplyr::mutate(off_ppp = round(off_ppp / 100, 2), 
                 def_ppp = round(def_ppp / 100, 2),
                 score_sentence = paste0(
                   result, ", ", pts_scored, "-",
                   pts_allowed),
+                shooting = round(off_shooting - def_shooting, 1),
+                turnovers = round(off_turnovers - def_turnovers, 1),
+                rebounds = round(off_reb - def_reb, 1),
+                freethrows = round(off_ft - def_ft, 1),
                 shooting_3 = (tpm +opp_tpm) / (tpa + opp_tpa),
                 off_3 = tp_pct,
                 off_2 = (fgm - tpm) / (fga - tpa),
@@ -206,6 +210,8 @@ ncaat_log <- games_with_ratings |>
   ) |> 
   dplyr::select(round, team, opp, score_sentence, 
                 off_ppp, def_ppp, 
+                shooting, turnovers,
+                rebounds, freethrows,
                 shooting_3, off_efg, off_3, off_2,
                 def_efg, def_3, def_2
   )

@@ -7,7 +7,7 @@ description: Log of NCAA Tournament games.
 
 ### NCAA Tournament Shooting Stats
 
-Shows shooting stats in 2025 NCAA Tournament games. 
+Shows 2025 NCAA Tournament games using accounting across the four factors. 
 
 ```sql ncaat_log
 select 
@@ -29,9 +29,8 @@ select round from cbb.ncaat_log
   <Column id=team title="Team"/>
   <Column id=opp title="Opp"/>
   <Column id=score_sentence title="Result"/>
-  <Column id=shooting_3 fmt=pct1 contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="3PT%" colGroup="Combined"/>
-  <Column id=off_3 fmt=pct1 contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="3PT%" colGroup="Offense"/>
-  <Column id=off_2 fmt=pct1 contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="2PT%" colGroup="Offense"/>
-  <Column id=def_3 fmt=pct1 contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="3PT%" colGroup="Defense"/>
-  <Column id=def_2 fmt=pct1 contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9 title="2PT%" colGroup="Defense"/>
+  <Column id=shooting contentType=colorscale colorScale={['#e57373', 'floralwhite', '#81c784']} colorMid=0 fmt=num1 title="+/-" colGroup="Shooting"/>
+  <Column id=turnovers contentType=colorscale colorScale={['#e57373', 'floralwhite', '#81c784']} colorMid=0 fmt=num1 title="+/-" colGroup="Turnovers"/>
+  <Column id=rebounds contentType=colorscale colorScale={['#e57373', 'floralwhite', '#81c784']} colorMid=0 fmt=num1 title="+/-" colGroup="Rebounds"/>
+  <Column id=freethrows contentType=colorscale colorScale={['#e57373', 'floralwhite', '#81c784']} colorMid=0 fmt=num1 title="+/-" colGroup="Free Throws"/>
 </DataTable>
