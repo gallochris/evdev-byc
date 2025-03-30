@@ -59,4 +59,4 @@ group by
     t.champ,
     t.season_avg,
     t.last_five_avg
-order by t.seed asc
+order by t.champ desc, t.seed asc
