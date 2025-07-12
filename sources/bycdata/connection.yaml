@@ -1,0 +1,6 @@
+# This file was automatically generated
+name: bycdata
+type: bigquery
+options:
+  authenticator: service-account
+  location: US

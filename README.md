@@ -1,6 +1,5 @@
 # Evidence project for Bless your chart
 
-
 ## Using the CLI
 
 ```bash
@@ -19,8 +18,6 @@ npm run dev
 
 ### Data sources
 
-Data sources include [cfbfastR](https://cfbfastr.sportsdataverse.org/index.html), [bcftoys.com](https://www.bcftoys.com/), and [ESPN.com](https://www.espn.com/), [cbbdata](https://github.com/andreweatherman/cbbdata/tree/main) + [barttorvik.com](https://barttorvik.com/#), and [hoopR](https://hoopr.sportsdataverse.org/).
+Data sources include [collegefootballdata.com](https://collegefootballdata.com/) and cfbfastR. The college hoops data is from [cbbdata](https://github.com/andreweatherman/cbbdata/tree/main) + [barttorvik.com](https://barttorvik.com/#), [stats.ncaa.org](https://stats.ncaa.org/selection_rankings/season_divisions/18403/nitty_gritties), and [hoopR](https://hoopr.sportsdataverse.org/).
 
-The data is cleaned and transformed using the R programming language. This site is built using [evidence.dev](https://evidence.dev/) and [duckdb](https://duckdb.org/). 
-
-College basketball data is currently being updated using a Git action. 
+The data is cleaned and transformed using the R programming language. This site is built using [evidence.dev](https://evidence.dev/), [duckdb](https://duckdb.org/), and [BigQuery](https://cloud.google.com/bigquery?hl=en). 

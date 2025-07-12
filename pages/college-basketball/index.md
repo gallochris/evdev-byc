@@ -1,3 +1,9 @@
+---
+title: CBB 2024-25
+sidebar_position: 2
+hide_title: true
+---
+
 # 2024-25 College basketball season
 
 ## About
