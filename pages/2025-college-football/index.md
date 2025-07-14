@@ -1,5 +1,5 @@
 ---
-title: 2025 CFB
+title: 2025 CFB Games
 hide_title: true
 sidebar_position: 1
 ---

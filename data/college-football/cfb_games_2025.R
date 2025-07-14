@@ -6,7 +6,27 @@
 # -------------------------------------------------------------
 
 # get games for 2025
-games_2025 <- get_games(year = 2025)
+games_2025 <- get_games(year = 2025) |> 
+  # some coordinates for these two venues are not present in the data
+  # so updating to the original or older venues to verify 
+    dplyr::mutate(venue = dplyr::case_match(
+      venue,
+      "Lanny and Sharon Martin Stadium" ~ "Ryan Field",
+      "Pitbull Stadium" ~ "FIU Stadium",
+      .default = venue
+    ), 
+    venueId = dplyr::case_match(
+      venueId,
+      5960 ~ 3911,
+      2031 ~ 218,
+      .default = venueId
+    ),
+   neutralSite = dplyr::case_when(
+      homeTeam == "Northwestern" & venue == "Ryan Field" ~ FALSE,
+      homeTeam == "Florida International" & venue == "FIU Stadium" ~ FALSE,
+      TRUE ~ neutralSite
+  ))
+  
 
 # get sp ratings
 sp_2025 <- get_sp_ratings(year = 2025)
@@ -48,8 +68,7 @@ team_home_venues <- games_2025 |>
   )
 
 # add games with one row per team per game
-games_fbs_teams <- games_2025 |>
-  dplyr::bind_rows(
+games_fbs_teams <- dplyr::bind_rows(
     # home team
     games_2025 |>
       dplyr::filter(homeTeam %in% fbs_teams) |>
@@ -212,6 +231,6 @@ con <- bigrquery::dbConnect(
   dataset = "cfb_2025"
 )
 
-DBI::dbWriteTable(con, "fbs_schedule", games_fbs_teams, overwrite = TRUE)
+DBI::dbWriteTable(con, "fbs_schedule", games_fbs_teams_final, overwrite = TRUE)
 
 DBI::dbDisconnect(con)
