@@ -3,58 +3,13 @@ title: FBS Teams
 hide_title: true
 sidebar_position: 2
 description: Summary of FBS teams. 
+queries:
+  - team_summary: cfb-25/cfb_sp_plus.sql
 ---
 
 ### 2025 FBS Teams 
 
-```sql team_summary 
-with team_sp_percentiles as (
-    -- Get each team's SP percentile from any one of their opponent's records
-    -- (since it's static right now, we just need one row per team)
-    select distinct
-        opponent as team,
-        opponentSpPercentile as teamSp
-    from  bycdata.fbs_schedule
-    where opponentSpPercentile is not null
-),
-
-opponent_analysis as (
-    select 
-        team,
-        conference,
-        -- Only calculate average from non-null values
-        avg(opponentSpPercentile) as avgOppSp,
-        avg(case when conferenceGame = true then opponentSpPercentile else null end) as avgOppSpConf,
-        avg(case when conferenceGame = false then opponentSpPercentile else null end) as avgOppSpNonCon,
-        -- Include all games, but replace null with 0 in the array
-        array_agg({
-            'date': gameDate, 
-            'oppSp': coalesce(opponentSpPercentile, 0.0)
-        }) as oppSpByDate
-    from  bycdata.fbs_schedule
-    -- Remove the where clause to include all games
-    group by team, conference
-)
-
--- Join team SP percentiles with opponent analysis
-select 
-    oa.team,
-    replace(replace(oa.team, ' ', '-'), '''', '') as team_link,
-    oa.conference,
-    coalesce(tsp.teamSp, 0.0) as teamSp,
-    oa.avgOppSp,
-    oa.avgOppSpConf,
-    oa.avgOppSpNonCon,
-    oa.oppSpByDate
-from opponent_analysis oa
-left join team_sp_percentiles tsp
-    on oa.team = tsp.team
-where oa.team like '${inputs.team.value}'
-   and oa.conference like '${inputs.conference.value}'
-order by 
-    coalesce(tsp.teamSp, 0.0) desc,
-    oa.avgOppSp desc;
-```
+SP+, calculated by [Bill Connelly](https://bsky.app/profile/espnbillc.bsky.social), is a tempo-and-opponent-adjusted measure of college football efficiency. These preseason ratings incorporate returning production, recent recruiting, and recent history. Percentiles are computed across all 136 FBS teams for 2025.
 
 <Dropdown data={team_summary} name=team value=team defaultValue="%">
   <DropdownOption value="%" valueLabel="Team"/>
@@ -69,8 +24,6 @@ order by
   <Column id=team title="Team"/>
   <Column id=teamSp fmt=pct1 title="SP+ %" contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9/>
   <Column id=avgOppSp fmt=pct1 title="Opp SP+ %" colGroup="Schedule Difficulty: Avg Opponent SP+ Percentile"/>
-  <Column id=avgOppSpConf fmt=pct1 title="League" colGroup="Schedule Difficulty: Avg Opponent SP+ Percentile"/>
-  <Column id=avgOppSpNonCon fmt=pct1 title="Non-Conf" colGroup="Schedule Difficulty: Avg Opponent SP+ Percentile"/>
   <Column id=oppSpByDate title="Opp Strength" colGroup="Schedule Difficulty: Avg Opponent SP+ Percentile" contentType=sparkbar sparkX=date sparkY=oppSp sparkColor=#53768a/>
 </DataTable>
 

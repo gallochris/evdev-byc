@@ -2,6 +2,8 @@
 title: Team Sheets
 description: Team details across predictive and resume metrics.
 hide_title: true
+queries:
+  - team_table: cfb-25/cfb_schedule_sp_plus.sql
 ---
 
 ```sql team_sp_summary
@@ -45,7 +47,7 @@ select *
 />
 {/each}
 
-SP+, calculated by [Bill Connelly](https://bsky.app/profile/espnbillc.bsky.social), is a tempo- and opponent-adjusted measure of college football efficiency. These are the preseason ratings based on returning production, recent recruiting, and recent history. The percentile for the team is computed across the ratings for all 136 FBS teams for the 2025 season.
+SP+, calculated by [Bill Connelly](https://bsky.app/profile/espnbillc.bsky.social), is a tempo-and-opponent-adjusted measure of college football efficiency. These are the preseason ratings based on returning production, recent recruiting, and recent history. The percentile for the team is computed across the ratings for all 136 FBS teams for the 2025 season.
 
 
 ```sql team_sched 
@@ -66,54 +68,6 @@ from
    bycdata.fbs_schedule
 where team like '${params.teams.replace(/-/g, ' ').replace(/'/g, "''")}' 
 order by week, date, time
-```
-
-```sql team_table
-with team_sp_percentiles as (
-    -- Get each team's SP percentile from any one of their opponent's records
-    -- (since it's static right now, we just need one row per team)
-    select distinct
-        opponent as team,
-        opponentSpPercentile as teamSp
-    from  bycdata.fbs_schedule
-    where opponentSpPercentile is not null
-),
-
-opponent_analysis as (
-    select 
-        team,
-        conference,
-        -- Only calculate average from non-null values
-        avg(opponentSpPercentile) as avgOppSp,
-        avg(case when conferenceGame = true then opponentSpPercentile else null end) as avgOppSpConf,
-        avg(case when conferenceGame = false then opponentSpPercentile else null end) as avgOppSpNonCon,
-        -- Include all games, but replace null with 0 in the array
-        array_agg({
-            'date': gameDate, 
-            'oppSp': coalesce(opponentSpPercentile, 0.0)
-        }) as oppSpByDate
-    from  bycdata.fbs_schedule
-    -- Remove the where clause to include all games
-    group by team, conference
-)
-
--- Join team SP percentiles with opponent analysis
-select 
-    oa.team,
-    oa.team as team_link,
-    oa.conference,
-    coalesce(tsp.teamSp, 0.0) as teamSp,
-    oa.avgOppSp,
-    oa.avgOppSpConf,
-    oa.avgOppSpNonCon,
-    oa.oppSpByDate
-from opponent_analysis oa
-left join team_sp_percentiles tsp
-    on oa.team = tsp.team
-where oa.team like '${params.teams.replace(/-/g, ' ').replace(/'/g, "''")}' 
-order by 
-    coalesce(tsp.teamSp, 0.0) desc,
-    oa.avgOppSp desc;
 ```
 
 ## Schedule Analysis
@@ -241,6 +195,7 @@ order by
     rightPadding=40
     cellHeight=25
     nullsZero=false
+    mobileValueLabels=true
     colorScale={[
         "rgb(255, 179, 179)", "rgb(255, 214, 153)",
         "rgb(255, 235, 156)",  "rgb(144, 238, 144)"
