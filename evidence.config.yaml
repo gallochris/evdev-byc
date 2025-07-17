@@ -1,6 +1,6 @@
 appearance:
   default: light
-  switcher: true
+  switcher: false
 
 # Retro theme
 theme:

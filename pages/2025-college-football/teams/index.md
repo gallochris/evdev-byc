@@ -20,7 +20,7 @@ SP+, calculated by [Bill Connelly](https://bsky.app/profile/espnbillc.bsky.socia
 </Dropdown>
 
 
-<DataTable data={team_summary} rows=136 search=true link=team_link rowNumbers=false>
+<DataTable data={team_summary} rows=40 search=true link=team_link rowNumbers=false>
   <Column id=team title="Team"/>
   <Column id=teamSp fmt=pct1 title="SP+ %" contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9/>
   <Column id=avgOppSp fmt=pct1 title="Opp SP+ %" colGroup="Schedule Difficulty: Avg Opponent SP+ Percentile"/>
