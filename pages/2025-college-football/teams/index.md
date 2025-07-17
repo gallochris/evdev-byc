@@ -7,7 +7,6 @@ description: Summary of FBS teams.
 
 ### 2025 FBS Teams 
 
-
 ```sql team_summary 
 with team_sp_percentiles as (
     -- Get each team's SP percentile from any one of their opponent's records
@@ -40,6 +39,7 @@ opponent_analysis as (
 -- Join team SP percentiles with opponent analysis
 select 
     oa.team,
+    replace(replace(oa.team, ' ', '-'), '''', '') as team_link,
     oa.conference,
     coalesce(tsp.teamSp, 0.0) as teamSp,
     oa.avgOppSp,
@@ -65,7 +65,7 @@ order by
 </Dropdown>
 
 
-<DataTable data={team_summary} rows=68 search=true rowNumbers=false>
+<DataTable data={team_summary} rows=136 search=true link=team_link rowNumbers=false>
   <Column id=team title="Team"/>
   <Column id=teamSp fmt=pct1 title="SP+ %" contentType=bar barColor=#c3f6c3 backgroundColor=#fbb0a9/>
   <Column id=avgOppSp fmt=pct1 title="Opp SP+ %" colGroup="Schedule Difficulty: Avg Opponent SP+ Percentile"/>
