@@ -74,7 +74,7 @@ order by week, date, time
 
 {#if team_table[0].conference === "FBS Independents"}
 
-Average SP+ percentile rankings of opponents os <Value data={team_table} column='avgOppSp' fmt=pct1/>
+Average SP+ percentile rankings of opponents is <Value data={team_table} column='avgOppSp' fmt=pct1/>
 
 {:else}
 
@@ -147,7 +147,7 @@ group by fs.team, fs.conference
 
 {#if travel_summary[0].conference === "FBS Independents"}
 
-{params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'s schedule includes <Value data={travel_summary} column='nonConferenceGames' fmt="num"/>  games against the <Value data={travel_summary} column='conferenceCounts'/> conferences. There is an average of <Value data={travel_summary} column='avgRest' fmt="num1"/> days of rest across these games. 
+{params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'s schedule includes <Value data={travel_summary} column='nonConferenceGames' fmt="num"/>  games against the - <Value data={travel_summary} column='conferenceCounts'/> - conferences. There is an average of <Value data={travel_summary} column='avgRest' fmt="num1"/> days of rest across these games. 
 
 The schedule includes <Value data={travel_summary} column='awayGames' fmt="num"/> away games spanning a total of <Value data={travel_summary} column='totalMiles' fmt="num0"/> miles. Below is a map of the travel schedule highlighted by the game furthest away from home: 
 
