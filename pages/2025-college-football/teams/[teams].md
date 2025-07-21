@@ -72,10 +72,19 @@ order by week, date, time
 
 ## Schedule Analysis
 
-Average SP+ percentile rankings of opponents: 
-- **All opponents**:  <Value data={team_table} column='avgOppSp' fmt=pct1/>
+{#if team_table[0].conference === "FBS Independents"}
+
+Average SP+ percentile rankings of opponents os <Value data={team_table} column='avgOppSp' fmt=pct1/>
+
+{:else}
+
+Average SP+ percentile rankings of opponents:
+
+- **All opponents**: <Value data={team_table} column='avgOppSp' fmt=pct1/>
 - **<Value data={team_table} column='conference'/> opponents**: <Value data={team_table} column='avgOppSpConf' fmt=pct1/>
-- **Non-conference**:  <Value data={team_table} column='avgOppSpNonCon' fmt=pct1/>
+- **Non-conference**: <Value data={team_table} column='avgOppSpNonCon' fmt=pct1/>
+
+{/if}
 
 <DataTable data={team_sched} rows=15 rowNumbers=true>
   <Column id=week title="Week"/>
@@ -101,21 +110,54 @@ Average SP+ percentile rankings of opponents:
 ## Travel and Rest 
 
 ```sql travel_summary
+with conference_counts as (
+  select 
+    team,
+    conference,
+    opponentConference,
+    count(*) as games_vs_conf
+  from bycdata.fbs_schedule
+  where team like '${params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'
+  group by team, conference, opponentConference
+)
 select 
-  team,
-  conference,
-  sum(milesTraveled) as totalMiles,
-  avg(case when daysRest > 0 then daysRest end) as avgRest,
-  count(case when homeAway = 'away' then 1 end) as awayGames,
-  count(case when conferenceGame = true then 1 end) as conferenceGames,
-  count(case when conferenceGame = false then 1 end) as nonConferenceGames
-from bycdata.fbs_schedule
-where team like '${params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'
-group by team, conference
+  fs.team,
+  fs.conference,
+  sum(fs.milesTraveled) as totalMiles,
+  avg(case when fs.daysRest > 0 then fs.daysRest end) as avgRest,
+  count(case when fs.homeAway = 'away' then 1 end) as awayGames,
+  count(case when fs.conferenceGame = true then 1 end) as conferenceGames,
+  count(case when fs.conferenceGame = false then 1 end) as nonConferenceGames,
+  count(distinct fs.opponentConference) as distinctConferences,
+  array_to_string(
+    array_agg(
+      distinct case 
+        when cc.opponentConference != fs.conference 
+        then cc.opponentConference || ' (' || cc.games_vs_conf || ')'
+        else null 
+      end
+    ) filter (where cc.opponentConference != fs.conference), 
+    ', '
+  ) as conferenceCounts
+from bycdata.fbs_schedule fs
+join conference_counts cc on fs.team = cc.team and fs.opponentConference = cc.opponentConference
+where fs.team like '${params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'
+group by fs.team, fs.conference
 ```
-{params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'s schedule includes <Value data={travel_summary} column='conferenceGames' fmt="num"/> games in the <Value data={travel_summary} column='conference'/> and <Value data={travel_summary} column='nonConferenceGames' fmt="num"/> non-conference games. There is an average of <Value data={travel_summary} column='avgRest' fmt="num1"/> days of rest across these games. 
 
-The schedule includes <Value data={travel_summary} column='awayGames' fmt="num"/> away games spanning a total of <Value data={travel_summary} column='totalMiles' fmt="num"/> miles. Below is a map of the travel schedule highlighted by the game furthest away from home: 
+{#if travel_summary[0].conference === "FBS Independents"}
+
+{params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'s schedule includes <Value data={travel_summary} column='nonConferenceGames' fmt="num"/>  games against the <Value data={travel_summary} column='conferenceCounts'/> conferences. There is an average of <Value data={travel_summary} column='avgRest' fmt="num1"/> days of rest across these games. 
+
+The schedule includes <Value data={travel_summary} column='awayGames' fmt="num"/> away games spanning a total of <Value data={travel_summary} column='totalMiles' fmt="num0"/> miles. Below is a map of the travel schedule highlighted by the game furthest away from home: 
+
+{:else}
+
+{params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'s schedule includes <Value data={travel_summary} column='conferenceGames' fmt="num"/> games in the <Value data={travel_summary} column='conference'/> and <Value data={travel_summary} column='nonConferenceGames' fmt="num"/> non-conference games against the <Value data={travel_summary} column='conferenceCounts'/> conferences. There is an average of <Value data={travel_summary} column='avgRest' fmt="num1"/> days of rest across these games. 
+
+The schedule includes <Value data={travel_summary} column='awayGames' fmt="num"/> away games spanning a total of <Value data={travel_summary} column='totalMiles' fmt="num0"/> miles. Below is a map of the travel schedule highlighted by the game furthest away from home: 
+
+{/if}
 
 ```sql game_coordinates
 select 
@@ -221,6 +263,7 @@ or origin like '${params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'
 order by 
   case when rating = 'NA' then null else cast(rating as decimal) end desc nulls last
 ```
+
 
 <DataTable data={portal_players} rows=50 rowNumbers=true>
   <Column id=name title="Name"/>
