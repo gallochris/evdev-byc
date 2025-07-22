@@ -126,6 +126,7 @@ select
   sum(fs.milesTraveled) as totalMiles,
   avg(case when fs.daysRest > 0 then fs.daysRest end) as avgRest,
   count(case when fs.homeAway = 'away' then 1 end) as awayGames,
+  count(case when fs.homeAway = 'neutral' then 1 end) as neutralGames,
   count(case when fs.conferenceGame = true then 1 end) as conferenceGames,
   count(case when fs.conferenceGame = false then 1 end) as nonConferenceGames,
   count(distinct fs.opponentConference) as distinctConferences,
@@ -155,7 +156,7 @@ The schedule includes <Value data={travel_summary} column='awayGames' fmt="num"/
 
 {params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'s schedule includes <Value data={travel_summary} column='conferenceGames' fmt="num"/> games in the <Value data={travel_summary} column='conference'/> and <Value data={travel_summary} column='nonConferenceGames' fmt="num"/> non-conference games against the <Value data={travel_summary} column='conferenceCounts'/> conferences. There is an average of <Value data={travel_summary} column='avgRest' fmt="num1"/> days of rest across these games. 
 
-The schedule includes <Value data={travel_summary} column='awayGames' fmt="num"/> away games spanning a total of <Value data={travel_summary} column='totalMiles' fmt="num0"/> miles. Below is a map of the travel schedule highlighted by the game furthest away from home: 
+The schedule includes <Value data={travel_summary} column='awayGames' fmt="num"/> away games and <Value data={travel_summary} column='neutralGames' fmt="num"/> neutral games spanning a total of <Value data={travel_summary} column='totalMiles' fmt="num0"/> miles. Below is a map of the travel schedule highlighted by the game furthest away from home: 
 
 {/if}
 
