@@ -262,14 +262,17 @@ from portal_players
 where destination like '${params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'
 or origin like '${params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'
 order by 
-  case when rating = 'NA' then null else cast(rating as decimal) end desc nulls last
+  case 
+    when rating = 'NA' or rating is null then null 
+    else cast(rating as decimal) 
+  end desc nulls last
 ```
 
 
 <DataTable data={portal_players} rows=50 rowNumbers=true>
   <Column id=name title="Name"/>
   <Column id=position/>
-  <Column id=rating fmt=num2/>
+  <Column id=rating fmt=num/>
   <Column id=origin title="From"/>
   <Column id=destination title="To"/>
   <Column id=transferDate fmt=m/d/y title="Date"/>
