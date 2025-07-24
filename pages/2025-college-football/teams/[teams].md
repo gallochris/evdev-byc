@@ -155,11 +155,9 @@ The schedule includes <Value data={travel_summary} column='awayGames' fmt="num"/
 
 {params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'s schedule includes <Value data={travel_summary} column='conferenceGames' fmt="num"/> games in the <Value data={travel_summary} column='conference'/> and <Value data={travel_summary} column='nonConferenceGames' fmt="num"/> non-conference games against the - Big 12 (1), <Value data={travel_summary} column='conferenceCounts'/> - conferences. There is an average of <Value data={travel_summary} column='avgRest' fmt="num1"/> days of rest across these games. 
 
-<Details title="Why is Arizona and Kansas State a non-conference game?">
-    
-    Kansas State and Arizona's matchup counts as non-conference game because it was scheduled before Arizona joined the Big 12
-
-</Details>
+<Alert>
+Kansas State and Arizona's matchup counts as non-conference game because it was scheduled before Arizona joined the Big 12.
+</Alert>
 
 The schedule includes <Value data={travel_summary} column='awayGames' fmt="num"/> away games and <Value data={travel_summary} column='neutralGames' fmt="num"/> neutral games spanning a total of <Value data={travel_summary} column='totalMiles' fmt="num0"/> miles. Below is a map of the travel schedule highlighted by the game furthest away from home: 
 
