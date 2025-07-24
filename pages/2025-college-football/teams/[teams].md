@@ -110,16 +110,6 @@ Average SP+ percentile rankings of opponents:
 ## Travel and Rest 
 
 ```sql travel_summary
-with conference_counts as (
-  select 
-    team,
-    conference,
-    opponentConference,
-    count(*) as games_vs_conf
-  from bycdata.fbs_schedule
-  where team like '${params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'
-  group by team, conference, opponentConference
-)
 select 
   fs.team,
   fs.conference,
@@ -127,21 +117,30 @@ select
   avg(case when fs.daysRest > 0 then fs.daysRest end) as avgRest,
   count(case when fs.homeAway = 'away' then 1 end) as awayGames,
   count(case when fs.homeAway = 'neutral' then 1 end) as neutralGames,
-  count(case when fs.conferenceGame = true then 1 end) as conferenceGames,
-  count(case when fs.conferenceGame = false then 1 end) as nonConferenceGames,
-  count(distinct fs.opponentConference) as distinctConferences,
+  count(case when fs.conferenceGame = true then 1 end) - 
+  count(case when (fs.team = 'Arizona' and fs.opponent = 'Kansas State') or 
+                  (fs.team = 'Kansas State' and fs.opponent = 'Arizona') then 1 end) as conferenceGames,
+  count(case when fs.conferenceGame = false then 1 end) + 
+  count(case when (fs.team = 'Arizona' and fs.opponent = 'Kansas State') or 
+                  (fs.team = 'Kansas State' and fs.opponent = 'Arizona') then 1 end) as nonConferenceGames,
+  count(distinct case when fs.conferenceGame = false and fs.opponentConference != fs.conference then fs.opponentConference end) as distinctConferences,
   array_to_string(
     array_agg(
       distinct case 
-        when cc.opponentConference != fs.conference 
-        then cc.opponentConference || ' (' || cc.games_vs_conf || ')'
+        when fs.conferenceGame = false and fs.opponentConference != fs.conference
+        then fs.opponentConference || ' (' || 
+             (select count(*) 
+              from bycdata.fbs_schedule fs2 
+              where fs2.team = fs.team 
+                and fs2.conferenceGame = false 
+                and fs2.opponentConference = fs.opponentConference
+                and fs2.opponentConference != fs.conference) || ')'
         else null 
       end
-    ) filter (where cc.opponentConference != fs.conference), 
+    ) filter (where fs.conferenceGame = false and fs.opponentConference != fs.conference), 
     ', '
   ) as conferenceCounts
 from bycdata.fbs_schedule fs
-join conference_counts cc on fs.team = cc.team and fs.opponentConference = cc.opponentConference
 where fs.team like '${params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'
 group by fs.team, fs.conference
 ```
@@ -151,6 +150,18 @@ group by fs.team, fs.conference
 {params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'s schedule includes <Value data={travel_summary} column='nonConferenceGames' fmt="num"/>  games against the - <Value data={travel_summary} column='conferenceCounts'/> - conferences. There is an average of <Value data={travel_summary} column='avgRest' fmt="num1"/> days of rest across these games. 
 
 The schedule includes <Value data={travel_summary} column='awayGames' fmt="num"/> away games spanning a total of <Value data={travel_summary} column='totalMiles' fmt="num0"/> miles. Below is a map of the travel schedule highlighted by the game furthest away from home: 
+
+{:else if travel_summary[0].team === "Kansas State" || travel_summary[0].team === "Arizona"}
+
+{params.teams.replace(/-/g, ' ').replace(/'/g, "''")}'s schedule includes <Value data={travel_summary} column='conferenceGames' fmt="num"/> games in the <Value data={travel_summary} column='conference'/> and <Value data={travel_summary} column='nonConferenceGames' fmt="num"/> non-conference games against the - Big 12 (1), <Value data={travel_summary} column='conferenceCounts'/> - conferences. There is an average of <Value data={travel_summary} column='avgRest' fmt="num1"/> days of rest across these games. 
+
+<Details title="Why is Arizona and Kansas State a non-conference game?">
+    
+    Kansas State and Arizona's matchup counts as non-conference game because it was scheduled before Arizona joined the Big 12
+
+</Details>
+
+The schedule includes <Value data={travel_summary} column='awayGames' fmt="num"/> away games and <Value data={travel_summary} column='neutralGames' fmt="num"/> neutral games spanning a total of <Value data={travel_summary} column='totalMiles' fmt="num0"/> miles. Below is a map of the travel schedule highlighted by the game furthest away from home: 
 
 {:else}
 

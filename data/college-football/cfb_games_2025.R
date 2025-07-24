@@ -25,11 +25,28 @@ games_2025 <- get_games(year = 2025) |>
       homeTeam == "Northwestern" & venue == "Ryan Field" ~ FALSE,
       homeTeam == "Florida International" & venue == "FIU Stadium" ~ FALSE,
       TRUE ~ neutralSite
-  ))
+  )
+) 
   
 
 # get sp ratings
 sp_2025 <- get_sp_ratings(year = 2025)
+
+
+# team sp ratings with percentiles 
+# save this as a CSV (not ready to add as a table yet)
+sp_percentiles <- sp_2025 |>
+  dplyr::mutate(
+    spPercentile = dplyr::percent_rank(overall_rating),
+    offPercentile = dplyr::percent_rank(offenseRating),,
+    specTeamsPercentile = dplyr::percent_rank(specialTeamsRating),
+    
+    # lower is better, reverse the ranking
+    defPercentile = dplyr::percent_rank(dplyr::desc(defenseRating))
+  ) 
+write.csv(sp_percentiles, "sp_percent_ranks.csv")
+
+
 
 # get venue data
 venues <- get_venues()
@@ -103,9 +120,9 @@ games_fbs_teams <- dplyr::bind_rows(
 
 # add percentiles for SP rating for all fbs teams
 opponent_percentiles <- sp_2025 |>
-  dplyr::filter(!is.na(rating)) |> # filter out non fbs teams if it's not there
+  dplyr::filter(!is.na(overall_rating)) |> # filter out non fbs teams if it's not there
   dplyr::mutate(
-    opponentSpPercentile = dplyr::percent_rank(rating)
+    opponentSpPercentile = dplyr::percent_rank(overall_rating)
   ) |>
   dplyr::select(team, opponentSpPercentile)
 
@@ -115,8 +132,8 @@ games_with_sp_ratings <- games_fbs_teams |>
     sp_2025 |>
       dplyr::select(
         opponent = team,
-        opponentSpRating = rating,
-        opponentSpRanking = ranking
+        opponentSpRating = overall_rating,
+        opponentSpRanking = overall_ranking
       ),
     by = "opponent"
   ) |> 
